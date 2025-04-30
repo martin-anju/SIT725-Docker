@@ -26,8 +26,6 @@ GENAI_API_KEY=<your-genai-api-key>
    cd Project
    ```
 
-````
-
 Install dependencies:
 
 ```bash
@@ -93,4 +91,7 @@ SIT725/
 Backend: The backend uses Socket.IO to emit a feedbackReady event to the frontend when the resume feedback is processed.
 
 Frontend: The frontend listens for the feedbackReady event and displays a notification to the user.
-````
+
+```
+
+```
