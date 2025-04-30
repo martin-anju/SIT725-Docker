@@ -26,17 +26,17 @@ GENAI_API_KEY=<your-genai-api-key>
    cd Project
    ```
 
-Install dependencies:
+   Install dependencies:
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-Start the backend server:
+   Start the backend server:
 
-```bash
-node server.js
-```
+   ```bash
+   node server.js
+   ```
 
 2. Run the Frontend:
    Navigate to the project root directory:
@@ -91,7 +91,3 @@ SIT725/
 Backend: The backend uses Socket.IO to emit a feedbackReady event to the frontend when the resume feedback is processed.
 
 Frontend: The frontend listens for the feedbackReady event and displays a notification to the user.
-
-```
-
-```
