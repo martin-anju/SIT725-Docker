@@ -48,3 +48,34 @@ export function handleFileUpload() {
 }
 
 //module.exports = { handleFileUpload };
+export function handleJobDescriptionUpload() {
+  const jobFileInput = document.getElementById("jobFile");
+  const jobDescriptionArea = document.getElementById("jobDescription");
+
+  jobFileInput.addEventListener("change", async () => {
+    const file = jobFileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("jobFile", file);
+
+    try {
+      const response = await fetch("http://localhost:3002/api/resumes/upload-jd", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        jobDescriptionArea.value = data.extractedText || "No text extracted.";
+      } else {
+        const error = await response.text();
+        alert("Upload failed: " + error);
+      }
+    } catch (err) {
+      console.error("Job description upload error:", err);
+      alert("An error occurred while uploading the job description.");
+    }
+  });
+}
+

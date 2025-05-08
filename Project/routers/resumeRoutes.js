@@ -13,5 +13,6 @@ router.get("/", resumeController.getAllResumes); // Fetch all resumes
 router.get("/:id", resumeController.getResumeById); // Stream a specific resume
 router.post("/upload", upload.single("resume"), resumeController.uploadResume); // Upload a new resume
 router.post("/evaluate", resumeController.evaluateResume);
+router.post("/upload-jd", upload.single("jobFile"), resumeController.uploadJobDescription);
 
 module.exports = router;

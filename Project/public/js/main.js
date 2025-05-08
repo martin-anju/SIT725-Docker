@@ -2,6 +2,13 @@ import { handleFileUpload } from "./upload.js";
 import { handleFeedback } from "./feedback.js";
 import { initializeChart } from "./chart.js";
 import { initializeNotifications } from "./notification.js";
+import { handleJobDescriptionUpload } from "./upload.js";
+
+if (window._resumePortalLoaded) {
+  console.warn("Resume Portal already loaded. Skipping...");
+  throw new Error("Script loaded multiple times");
+}
+window._resumePortalLoaded = true;
 
 // Flags to prevent duplicate loading
 let navbarLoaded = false;
@@ -16,7 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
   handleFileUpload();
   handleFeedback();
   initializeNotifications();
-
+  handleJobDescriptionUpload();
+/*
   // Load Navbar
   if (!navbarLoaded) {
     fetch("components/navbar.html")
@@ -38,4 +46,5 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((err) => console.error("Error loading footer:", err));
   }
+  */
 });

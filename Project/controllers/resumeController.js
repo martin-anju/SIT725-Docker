@@ -1,5 +1,7 @@
 const { ObjectId } = require("mongodb");
 const pdfParse = require("pdf-parse");
+const mammoth = require("mammoth");
+
 const {
   getAllResumes,
   getResumeById,
@@ -82,7 +84,7 @@ exports.uploadResume = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       extractedText = await mammoth
-        .extractRawText({ buffer: req.file.buffer })
+      .extractRawText({ buffer: Buffer.from(req.file.buffer) })
         .then((result) => result.value);
     } else {
       console.log("Unsupported file format");
@@ -125,5 +127,35 @@ exports.evaluateResume = async (req, res) => {
   } catch (err) {
     console.error("Error evaluating resume:", err);
     res.status(500).json({ message: "Error evaluating resume" });
+  }
+};
+
+exports.uploadJobDescription = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send("No file uploaded");
+    }
+
+    let extractedText = "";
+    if (req.file.mimetype === "application/pdf") {
+      extractedText = await pdfParse(req.file.buffer).then((data) => data.text);
+    } else if (
+      req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      const result = await mammoth.extractRawText({ buffer: Buffer.from(req.file.buffer) });
+      extractedText = result.value;
+      console.log("🟦 JD extracted text length:", extractedText.length);
+      console.log("🟩 JD preview:", extractedText.slice(0, 200));  // First 200 characters
+    } else {
+      return res.status(400).send("Unsupported file format");
+    }
+
+    res.status(200).json({
+      message: "Job description uploaded successfully",
+      extractedText: extractedText,
+    });
+  } catch (err) {
+    console.error("Error uploading job description:", err);
+    res.status(500).send("Error uploading job description");
   }
 };

@@ -111,12 +111,32 @@ const evaluateResume = async (resumeText, jobDescription) => {
       Relevance: parsedResponse["Relevance"] || 0,
       Tailor: parsedResponse["Tailor"] || "No", // Default to "No" if not present
     };
+    const importantKeywords = [
+      "python", "sql", "aws", "azure", "gcp", "pytorch", "tensorflow", "dbt",
+      "power bi", "tableau", "cloud", "ml", "machine learning", "data analysis"
+    ];
+    
+    const normalize = text =>
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s+]/g, " ")  // remove punctuation
+        .replace(/\s+/g, " ")           // collapse extra whitespace
+        .trim();
+    
+    const jdNormalized = normalize(jobDescription);
+    const resumeNormalized = normalize(resumeText);
+    
+    const missingKeywords = importantKeywords.filter(keyword =>
+      jdNormalized.includes(keyword) && !resumeNormalized.includes(keyword)
+    );
+    console.log("Missing keywords:", missingKeywords);
 
     // Return structured result with explanation and scores
     return {
       evaluation: "Resume evaluation completed successfully.",
       scores: scores,
       explanation: explanationText,
+      missingKeywords: missingKeywords,
     };
   } catch (err) {
     // Log and rethrow the error for debugging
