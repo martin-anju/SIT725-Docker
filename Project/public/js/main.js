@@ -16,6 +16,7 @@ let footerLoaded = false;
 
 // Function to fetch and display uploaded resumes
 function fetchResumes() {
+  console.log("Fetching resumes...");
   fetch("http://localhost:3002/api/resumes") // Replace with your backend URL
     .then((response) => response.json())
     .then((resumes) => {
@@ -23,11 +24,16 @@ function fetchResumes() {
       resumeList.innerHTML = ""; // Clear the existing list
 
       if (resumes.length === 0) {
-        resumeList.innerHTML = "<li class='list-group-item'>No resumes uploaded yet.</li>";
+        resumeList.innerHTML =
+          "<li class='list-group-item'>No resumes uploaded yet.</li>";
       } else {
         resumes.forEach((resume) => {
           const resumeItem = document.createElement("li");
-          resumeItem.classList.add("list-group-item", "d-flex", "justify-content-between");
+          resumeItem.classList.add(
+            "list-group-item",
+            "d-flex",
+            "justify-content-between"
+          );
           resumeItem.innerHTML = `
             <span>${resume.filename}</span>
             <button class="btn btn-danger btn-sm" onclick="deleteResume('${resume._id}')">Delete</button>
@@ -66,11 +72,11 @@ function updateLoginLogoutLinks() {
   const isLoggedIn = checkIfLoggedIn();
 
   if (isLoggedIn) {
-    document.getElementById("loginLink").style.display = "none";  // Hide Login link
+    document.getElementById("loginLink").style.display = "none"; // Hide Login link
     document.getElementById("logoutLink").style.display = "block"; // Show Logout link
   } else {
-    document.getElementById("loginLink").style.display = "block";  // Show Login link
-    document.getElementById("logoutLink").style.display = "none";  // Hide Logout link
+    document.getElementById("loginLink").style.display = "block"; // Show Login link
+    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
   }
 }
 
@@ -91,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   handleFeedback();
   initializeNotifications();
   handleJobDescriptionUpload();
-/*
+
   // Load Navbar
   if (!navbarLoaded) {
     fetch("components/navbar.html")
@@ -114,9 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((err) => console.error("Error loading footer:", err));
   }
-
-  */
-
 
   // Fetch and display the uploaded resumes when the page is loaded
   fetchResumes();
