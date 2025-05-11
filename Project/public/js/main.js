@@ -26,9 +26,16 @@ function fetchResumes() {
       if (resumes.length === 0) {
         resumeList.innerHTML =
           "<li class='list-group-item'>No resumes uploaded yet.</li>";
+        resumeList.innerHTML =
+          "<li class='list-group-item'>No resumes uploaded yet.</li>";
       } else {
         resumes.forEach((resume) => {
           const resumeItem = document.createElement("li");
+          resumeItem.classList.add(
+            "list-group-item",
+            "d-flex",
+            "justify-content-between"
+          );
           resumeItem.classList.add(
             "list-group-item",
             "d-flex",
@@ -73,8 +80,11 @@ function updateLoginLogoutLinks() {
 
   if (isLoggedIn) {
     document.getElementById("loginLink").style.display = "none"; // Hide Login link
+    document.getElementById("loginLink").style.display = "none"; // Hide Login link
     document.getElementById("logoutLink").style.display = "block"; // Show Logout link
   } else {
+    document.getElementById("loginLink").style.display = "block"; // Show Login link
+    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
     document.getElementById("loginLink").style.display = "block"; // Show Login link
     document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
   }
@@ -85,6 +95,50 @@ function logoutUser() {
   // Clear the login status and redirect to homepage
   localStorage.setItem("isLoggedIn", "false"); // Example of logging out
   window.location.href = "/"; // Redirect to homepage after logout
+}
+
+// Function to handle PDF Download
+async function handleDownloadPdf() {
+  const feedbackContainer = document.getElementById("feedbackContainer");
+
+  if (
+    !feedbackContainer ||
+    !document.getElementById("feedbackResult").innerHTML.trim()
+  ) {
+    alert("No feedback to export!");
+    return;
+  }
+
+  try {
+    const canvas = await html2canvas(feedbackContainer, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+    const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+    const pageHeight = pdf.internal.pageSize.getHeight() - 20;
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 10;
+
+    pdf.addImage(imgData, "PNG", 10, position, pdfWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 10, position, pdfWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save("ResumeFeedback.pdf");
+  } catch (err) {
+    console.error("Error generating PDF:", err);
+    alert("An error occured while generating the PDF");
+  }
 }
 
 // Initialize components
@@ -131,5 +185,20 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       logoutUser(); // Call logout function
     });
+  }
+
+  // Handle download PDF button
+  const downloadBtn = document.getElementById("downloadPdfBtn");
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", handleDownloadPdf);
+    const feedbackResult = document.getElementById("feedbackResult");
+    const observer = new MutationObserver(() => {
+      if (feedbackResult.innerHTML.trim()) {
+        downloadBtn.classList.remove("d-none");
+      } else {
+        downloadBtn.classList.add("d-none");
+      }
+    });
+    observer.observe(feedbackResult, { childList: true, subtree: true });
   }
 });
