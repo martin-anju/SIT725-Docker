@@ -6,6 +6,8 @@
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "highcharts": "^12.2.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "mammoth": "^1.9.0",
     "mongodb": "^6.15.0",
     "multer": "^1.4.4",
