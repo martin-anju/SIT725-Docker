@@ -178,6 +178,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // Fetch and display the uploaded resumes when the page is loaded
   fetchResumes();
 
+  // Fetch user info and update the Google button label LUCAS
+  fetch("/api/user")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.loggedIn) {
+        const googleBtn = document.querySelector(".gsi-material-button-contents");
+        if (googleBtn) {
+          googleBtn.textContent = `Welcome, ${data.name}`;
+        }
+        const loginLink = document.getElementById("loginLink");
+        const logoutLink = document.getElementById("logoutLink");
+        if (loginLink && logoutLink) {
+          loginLink.style.display = "none";
+          logoutLink.style.display = "block";
+        }
+      }
+    })
+    .catch((err) => console.error("Error checking user login:", err));
+
   // Handle logout button click
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
