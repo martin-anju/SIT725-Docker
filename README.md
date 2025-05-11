@@ -48,7 +48,7 @@ GENAI_API_KEY=<your-genai-api-key>
    Start a lightweight server
 
    ```bash
-   serve -s . -l 3000  or http-server -p 3000
+   http-server -p 3000
    ```
 
    Open the frontend in your browser:

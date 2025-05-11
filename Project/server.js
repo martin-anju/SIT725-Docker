@@ -25,12 +25,25 @@ app.use((req, res, next) => {
   next();
 });
 
+const allowedOrigins = [
+  "http://localhost:3000", // Allow localhost
+  "http://192.168.4.21:3000", // Allow access from this IP
+];
+
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
-); // Enable CORS for all routes
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
