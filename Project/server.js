@@ -1,5 +1,5 @@
 // Load environment variables LUCAS
-require("dotenv").config(); // 
+require("dotenv").config();
 
 // Google OAuth 2.0 setup LUCAS
 const passport = require("passport"); // authenticatation middleware
@@ -96,7 +96,7 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), 
   (req, res) => {
-    res.session.userName = req.user.displayName;
+    req.session.userName = req.user.displayName;
     res.redirect("/"); // redirect back to homepage
 });
 
