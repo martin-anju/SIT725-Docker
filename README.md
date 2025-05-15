@@ -81,7 +81,6 @@ SIT725/
 │   │   ├── chart.js             # Chart rendering logic
 │   │   ├── notification.js      # Handles Socket.IO notifications
 │   │   ├── upload.js            # Handles resume file upload
-│   │   └── uploadJob.js         # Handles job description file upload
 │   └── index.html               # Frontend UI
 ├── routers/
 │   ├── resumeRoutes.js          # Defines API routes for resumes
