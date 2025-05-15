@@ -7,6 +7,11 @@ export function handleFileUpload() {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    // Check if user is logged in
+    if (!window.loginManager?.isLoggedIn) {
+      alert("Please sign in to upload your resume");
+      return;
+    }
 
     if (!fileInput.files.length) {
       uploadStatus.innerHTML =
@@ -23,6 +28,7 @@ export function handleFileUpload() {
       const response = await fetch("http://localhost:3002/api/resumes/upload", {
         method: "POST",
         body: formData,
+        credentials: "include", // Add credentials for authentication
       });
 
       if (response.ok) {
@@ -54,22 +60,29 @@ export function handleJobDescriptionUpload() {
   const uploadJobBtn = document.getElementById("uploadJobBtn");
 
   uploadJobBtn.addEventListener("click", async () => {
+    // Check if user is logged in
+    if (!window.loginManager?.isLoggedIn) {
+      alert("Please sign in to upload job description");
+      return;
+    }
+
     const file = jobFileInput.files[0];
     if (!file) {
       alert("Please select a JD file first.");
       return;
     }
 
-    console.log("📥 JD file selected:", file.name);
+    console.log(" JD file selected:", file.name);
 
     const formData = new FormData();
     formData.append("jobFile", file);
 
     try {
-      console.log("🚀 Sending JD file to backend...");
+      console.log(" Sending JD file to backend...");
       const response = await fetch("http://localhost:3002/api/jobs/upload", {
         method: "POST",
         body: formData,
+        credentials: "include", // Add credentials for authentication
       });
 
       if (response.ok) {
@@ -86,4 +99,3 @@ export function handleJobDescriptionUpload() {
     }
   });
 }
-

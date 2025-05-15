@@ -16,12 +16,21 @@
           <a class="nav-link" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
         </li>
         <li class="nav-item" id="loginLink">
-          <a class="nav-link" href="login.html">Login</a>
+          <button class="btn btn-light" id="loginBtn">
+            <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 20px; margin-right: 8px;">
+            Login with Google
+          </button>
         </li>
         <li class="nav-item" id="logoutLink" style="display: none;">
-          <a class="nav-link" href="#" id="logoutBtn">Logout</a>
         </li>
       </ul>
+      <div class="navbar-nav">
+        <!-- User info display -->
+        <div class="nav-item d-flex align-items-center" id="userInfo" style="display: none;">
+          <span class="nav-link text-light" id="userName"></span>
+          <button class="btn btn-danger ms-2" id="logoutBtn">Logout</button>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
