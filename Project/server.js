@@ -15,6 +15,7 @@ const {
   getGfsBucket,
 } = require("./db/mongoConnection"); // Import the db module
 const resumeRoutes = require("./routers/resumeRoutes");
+const jobRoutes = require("./routers/jobRoutes");
 
 const app = express();
 const port = 3002;
@@ -96,7 +97,7 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), 
   (req, res) => {
-    res.session.userName = req.user.displayName;
+    req.session.userName = req.user.displayName;
     res.redirect("/"); // redirect back to homepage
 });
 
@@ -129,7 +130,8 @@ connectToMongoDB()
 
     // Routes
     app.use("/api/resumes", resumeRoutes);
-
+    app.use("/api/jobs", jobRoutes);
+    
     // Route for the root path (after static middleware)
     app.get("/", (req, res) => {
       res.sendFile(path.join(__dirname, "public", "index.html"));
