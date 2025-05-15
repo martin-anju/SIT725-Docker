@@ -79,26 +79,7 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files like index.html, CSS, and client-side JS from 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
-<<<<<<< HEAD
 app.use("/auth", authRoutes);
-=======
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }) // Start OAuth flow
-);
-
-app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), 
-  (req, res) => {
-    req.session.userName = req.user.displayName;
-    res.redirect("/"); // redirect back to homepage
-});
-
-app.get("/api/user", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({ loggedIn: true, name: req.session.userName });
-  } else {
-    res.json({ loggedIn: false });
-  }
-});
->>>>>>> origin/main
 
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.displayName}`); // Show welcome message after login
