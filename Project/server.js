@@ -2,9 +2,9 @@
 require("dotenv").config();
 
 // Google OAuth 2.0 setup LUCAS
+const { setupGoogleStrategy } = require("./controllers/authController");
 const passport = require("passport"); // authenticatation middleware
 const session = require("express-session"); // Session handling
-const GoogleStrategy = require("passport-google-oauth20").Strategy; // Google OAth strategy
 const path = require("path");
 
 const express = require("express");
@@ -15,6 +15,7 @@ const {
   getGfsBucket,
 } = require("./db/mongoConnection"); // Import the db module
 const resumeRoutes = require("./routers/resumeRoutes");
+const authRoutes = require("./routers/authRoutes");
 
 const app = express();
 const port = 3002;
@@ -31,21 +32,7 @@ app.use(session({
 app.use(passport.initialize()); // intialises passport
 app.use(passport.session()); // makes sure passport integrates with express-session
 
-// Configure Google OAuth strategy LUCAS
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID, // From Google Console
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET, // From Google Console
-  callbackURL: "http://localhost:3002/auth/google/callback", // Correct URL to redirect after Google Login
-},
-  (accessToken, refreshToken, profile, done) => {
-    return done(null, profile); // Pass user profile to next middleware
-  }
-)
-);
-
-// Serialise/Deserialise user for session handling LUCAS
-passport.serializeUser((user, done) => done(null, user)); // Save user to session
-passport.deserializeUser((user, done) => done(null, user)); // Retrieve user from session
+setupGoogleStrategy(); // Apply the Google OAuth strategy and session setup
 
 // Socket.IO setup
 const http = require("http");
@@ -91,30 +78,10 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files like index.html, CSS, and client-side JS from 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }) // Start OAuth flow
-);
-
-app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: "/" }), 
-  (req, res) => {
-    req.session.userName = req.user.displayName;
-    res.redirect("/"); // redirect back to homepage
-});
-
-app.get("/api/user", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({ loggedIn: true, name: req.session.userName });
-  } else {
-    res.json({ loggedIn: false });
-  }
-});
+app.use("/auth", authRoutes);
 
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.displayName}`); // Show welcome message after login
-});
-
-app.get("/logout", (req, res) => {
-  req.logOut(); // Passport logout
-  res.redirect("/"); // Go back to home
 });
 
 // MongoDB Connection

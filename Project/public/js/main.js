@@ -179,13 +179,13 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchResumes();
 
   // Fetch user info and update the Google button label LUCAS
-  fetch("/api/user")
+  fetch("/auth/user")
     .then((res) => res.json())
     .then((data) => {
       if (data.loggedIn) {
         const googleBtn = document.querySelector(".gsi-material-button-contents");
         if (googleBtn) {
-          googleBtn.textContent = `Welcome, ${data.name}`;
+          googleBtn.textContent = `Welcome, ${data.name || "User"}`;
         }
         const loginLink = document.getElementById("loginLink");
         const logoutLink = document.getElementById("logoutLink");
