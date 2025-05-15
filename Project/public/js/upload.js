@@ -51,16 +51,23 @@ export function handleFileUpload() {
 export function handleJobDescriptionUpload() {
   const jobFileInput = document.getElementById("jobFile");
   const jobDescriptionArea = document.getElementById("jobDescription");
+  const uploadJobBtn = document.getElementById("uploadJobBtn");
 
-  jobFileInput.addEventListener("change", async () => {
+  uploadJobBtn.addEventListener("click", async () => {
     const file = jobFileInput.files[0];
-    if (!file) return;
+    if (!file) {
+      alert("Please select a JD file first.");
+      return;
+    }
+
+    console.log("📥 JD file selected:", file.name);
 
     const formData = new FormData();
     formData.append("jobFile", file);
 
     try {
-      const response = await fetch("http://localhost:3002/api/resumes/upload-jd", {
+      console.log("🚀 Sending JD file to backend...");
+      const response = await fetch("http://localhost:3002/api/jobs/upload", {
         method: "POST",
         body: formData,
       });
@@ -68,6 +75,7 @@ export function handleJobDescriptionUpload() {
       if (response.ok) {
         const data = await response.json();
         jobDescriptionArea.value = data.extractedText || "No text extracted.";
+        console.log("✅ JD uploaded and text extracted.");
       } else {
         const error = await response.text();
         alert("Upload failed: " + error);
