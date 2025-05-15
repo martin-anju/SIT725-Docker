@@ -62,28 +62,33 @@ GENAI_API_KEY=<your-genai-api-key>
 ```
 SIT725/
 ├── controllers/
-│   └── resumeController.js  # Handles resume-related logic
+│   ├── resumeController.js      # Handles resume-related logic
+│   └── jobController.js         # Handles job description-related logic
 ├── db/
-│   └── mongoConnection.js   # MongoDB connection logic
+│   └── mongoConnection.js       # MongoDB connection logic
 ├── models/
-│   └── resumeModel.js       # Handles database operations
+│   ├── resumeModel.js           # Handles resume database operations
+│   └── jobModel.js              # Handles job description database operations
 ├── public/
 │   ├── components/
-│   │   ├── navbar.html      # Navbar component
-│   │   └── footer.html      # Footer component
+│   │   ├── navbar.html          # Navbar component
+│   │   └── footer.html          # Footer component
 │   ├── css/
-│   │   └── styles.css       # Frontend styles
+│   │   └── styles.css           # Frontend styles
 │   ├── js/
-│   │   ├── main.js          # Main frontend logic
-│   │   ├── feedback.js      # Handles feedback functionality
-│   │   ├── chart.js         # Chart rendering logic
-│   │   ├── notification.js  # Handles Socket.IO notifications
-│   │   └── upload.js        # Handles file upload functionality
-│   └── index.html           # Frontend UI
+│   │   ├── main.js              # Main frontend logic
+│   │   ├── feedback.js          # Handles feedback functionality
+│   │   ├── chart.js             # Chart rendering logic
+│   │   ├── notification.js      # Handles Socket.IO notifications
+│   │   ├── upload.js            # Handles resume file upload
+│   │   └── uploadJob.js         # Handles job description file upload
+│   └── index.html               # Frontend UI
 ├── routers/
-│   └── resumeRoutes.js      # Defines API routes for resumes
-├── server.js                # Express server configuration
-└── package.json             # Project dependencies
+│   ├── resumeRoutes.js          # Defines API routes for resumes
+│   └── jobRoutes.js             # Defines API routes for job descriptions
+├── server.js                    # Express server configuration
+└── package.json                 # Project dependencies
+
 ```
 
 ### Socket.IO Integration
