@@ -20,6 +20,7 @@ const { isAuthenticated } = require("./middlewares/auth");
 const { userDb, createUserIndexes } = require("./db/userDB");
 const app = express();
 const port = 3002;
+const userController = require("./controllers/userController");
 
 // Middleware LUCAS
 app.use(
@@ -96,6 +97,21 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files like index.html, CSS, and client-side JS from 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
+// Update session configuration
+app.use(
+  session({
+    secret: "secret",
+    resave: true, // Change to true
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // Set to true if using HTTPS
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: true,
+    },
+  })
+);
+
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }) // Start OAuth flow
@@ -104,9 +120,15 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    req.session.userName = req.user.displayName;
-    res.redirect("/"); // redirect back to homepage
+  async (req, res) => {
+    try {
+      await userDb.createUser(req.user);
+      req.session.userName = req.user.displayName;
+      res.redirect("/"); // redirect back to homepage
+    } catch (error) {
+      console.error("Error during Google authentication:", error);
+      res.status(500).json({ error: "Failed to create user" });
+    }
   }
 );
 

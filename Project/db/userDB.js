@@ -16,8 +16,9 @@ const createUserIndexes = async () => {
 
 // User operations
 const userDb = {
-  // Create a new user
+  // Create or update a user
   async createUser(userData) {
+    console.log("Creating/updating user in database...");
     const db = getDb();
     const collection = db.collection(COLLECTION_NAME);
 
@@ -26,11 +27,19 @@ const userDb = {
       displayName: userData.displayName,
       email: userData.emails[0].value,
       profilePicture: userData.photos[0]?.value,
-      createdAt: new Date(),
       lastLogin: new Date(),
     };
 
-    const result = await collection.insertOne(user);
+    // Use updateOne with upsert to handle both new and existing user
+    const result = await collection.updateOne(
+      { googleId: userData.id }, // filter
+      {
+        $set: user,
+        $setOnInsert: { createdAt: new Date() },
+      },
+      { upsert: true } // Create if doesn't exist
+    );
+
     return result;
   },
 
