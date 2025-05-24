@@ -36,6 +36,13 @@ export function handleFileUpload() {
         uploadStatus.innerHTML =
           '<span class="text-success">File uploaded successfully!</span>';
 
+        // Store the feedback session ID
+        localStorage.setItem(
+          "currentFeedbackSessionId",
+          data.feedbackSessionId
+        );
+        console.log("🟦 Feedback session ID stored:", data.feedbackSessionId);
+
         // Update the extracted text area with the extracted content
         extractedTextArea.value = data.extractedText || "No text extracted.";
 

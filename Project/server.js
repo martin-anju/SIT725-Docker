@@ -20,17 +20,35 @@ const { isAuthenticated } = require("./middlewares/auth");
 const { userDb, createUserIndexes } = require("./db/userDB");
 const app = express();
 const port = 3002;
-const userController = require("./controllers/userController");
+const feedbackSessionRoutes = require("./routers/feebackSessionRoutes");
 
 // Middleware LUCAS
+/*
 app.use(
   session({
+    name: "userSessionToken",
     secret: "secret",
     resave: false,
     saveUninitialized: true,
   })
 );
+*/
 
+// Update session configuration
+app.use(
+  session({
+    name: "userSessionToken",
+    secret: "secret",
+    resave: true, // Change to true
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // Set to true if using HTTPS
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: true,
+    },
+  })
+);
 // Initialise passport and integrate with express session LUCAS
 app.use(passport.initialize()); // intialises passport
 app.use(passport.session()); // makes sure passport integrates with express-session
@@ -97,21 +115,6 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files like index.html, CSS, and client-side JS from 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
-// Update session configuration
-app.use(
-  session({
-    secret: "secret",
-    resave: true, // Change to true
-    saveUninitialized: true,
-    cookie: {
-      secure: false, // Set to true if using HTTPS
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      httpOnly: true,
-    },
-  })
-);
-
 app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }) // Start OAuth flow
@@ -145,25 +148,40 @@ app.get("/profile", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  // Add callback function to req.logout()
+  // First clear the session cookie
+  res.clearCookie("userSessionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+    domain: "localhost", // Add domain
+  });
+
+  console.log("Cookie cleared");
+
+  // Then handle the logout
   req.logout((err) => {
     if (err) {
       console.error("Logout error:", err);
       return res.status(500).json({ message: "Error logging out" });
     }
 
-    // Clear the session
+    console.log("Passport logout completed");
+
+    // Destroy the session
     req.session.destroy((err) => {
       if (err) {
         console.error("Error destroying session:", err);
         return res.status(500).json({ message: "Error destroying session" });
       }
 
-      // Clear the session cookie
-      res.clearCookie("connect.sid");
+      console.log("Session destroyed");
 
       // Send success response
-      res.json({ message: "Logged out successfully" });
+      res.status(200).json({
+        message: "Logged out successfully",
+        success: true,
+      });
     });
   });
 });
@@ -182,6 +200,7 @@ connectToMongoDB()
     // Routes
     app.use("/api/resumes", isAuthenticated, resumeRoutes);
     app.use("/api/jobs", isAuthenticated, jobRoutes);
+    app.use("/api/feedback-sessions", isAuthenticated, feedbackSessionRoutes);
 
     // Route for the root path (after static middleware)
     app.get("/", (req, res) => {

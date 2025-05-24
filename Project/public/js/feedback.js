@@ -10,9 +10,11 @@ export function handleFeedback() {
 
     const resumeText = extractedTextArea.value?.trim();
     const jobDescription = jobDescriptionArea.value?.trim();
+    const feedbackSessionId = localStorage.getItem("currentFeedbackSessionId");
 
     console.log("🟦 Resume Text Length:", resumeText.length);
     console.log("🟩 Job Description Length:", jobDescription.length);
+    console.log("🟦 Feedback Session ID:", feedbackSessionId);
 
     if (!resumeText || !jobDescription) {
       alert("Both resume text and job description are required.");
@@ -26,7 +28,11 @@ export function handleFeedback() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ resumeText, jobDescription }),
+          body: JSON.stringify({
+            resumeText,
+            jobDescription,
+            feedbackSessionId,
+          }),
         }
       );
 

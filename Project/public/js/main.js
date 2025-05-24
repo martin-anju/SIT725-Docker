@@ -4,6 +4,7 @@ import { initializeChart } from "./chart.js";
 import { initializeNotifications } from "./notification.js";
 import { handleJobDescriptionUpload } from "./upload.js";
 import LoginManager from "./login.js";
+import { fetchUserSessions, displaySessions } from "./sessions.js";
 
 if (window._resumePortalLoaded) {
   console.warn("Resume Portal already loaded. Skipping...");
@@ -209,3 +210,16 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(feedbackResult, { childList: true, subtree: true });
   }
 });
+
+// Function to load and display user sessions
+async function loadUserSessions() {
+  try {
+    const sessions = await fetchUserSessions();
+    displaySessions(sessions);
+  } catch (error) {
+    console.error("Error loading sessions:", error);
+  }
+}
+
+// Call this when the page loads or when you want to refresh the sessions
+document.addEventListener("DOMContentLoaded", loadUserSessions);
