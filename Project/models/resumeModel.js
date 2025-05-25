@@ -156,6 +156,7 @@ const evaluateResume = async (
         status: "completed",
         scores: scores,
         explanation: explanationText,
+        jobDescription: jobDescription,
         updatedAt: new Date(),
       });
     }
