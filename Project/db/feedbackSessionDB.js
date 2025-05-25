@@ -12,6 +12,7 @@ const createFeedbackSession = async (sessionData) => {
     userId: sessionData.userId,
     resumeId: sessionData.resumeId,
     feedback: sessionData.feedback,
+    jobDescription: sessionData.jobDescription,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -42,6 +43,7 @@ const updateFeedbackSession = async (sessionId, updateData) => {
           explanation: updateData.explanation,
           updatedAt: new Date(),
         },
+        jobDescription: updateData.jobDescription,
       },
     }
   );

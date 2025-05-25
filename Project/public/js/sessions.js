@@ -103,6 +103,17 @@ window.showSessionDetail = function (sessionId) {
       }
       
       ${
+        session.jobDescription
+          ? `
+        <div class="mb-3">
+          <h6>Job Description</h6>
+            <textarea class="form-control" rows="5" readonly>${session.jobDescription}</textarea>
+        </div>
+      `
+        : ""
+      }
+
+      ${
         session.feedback.scores
           ? `
         <div class="mb-3">

@@ -13,6 +13,7 @@ exports.createSession = async (req, res) => {
       userId: req.user._id, // Assuming user is authenticated and available in req.user
       resumeId: req.body.resumeId,
       feedback: req.body.feedback,
+      jobDescription: req.body.jobDescription,
     };
 
     const sessionId = await createFeedbackSession(sessionData);
