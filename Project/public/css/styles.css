@@ -251,3 +251,38 @@ main {
   background-color: rgba(0,0,0,0.2);
   border-radius: 2px;
 }
+
+/* JD History Panel */
+#jdHistoryContainer {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+#jdHistoryContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+#jdHistoryContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#jdHistoryContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.jd-card .card-body {
+  padding: 0.75rem 1rem;
+}
+
+.jd-card small {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.jd-card .btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}

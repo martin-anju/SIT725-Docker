@@ -5,6 +5,7 @@ import { initializeNotifications } from "./notification.js";
 import { handleJobDescriptionUpload } from "./upload.js";
 import LoginManager from "./login.js";
 import { fetchUserSessions, displaySessions } from "./sessions.js";
+import { fetchJobDescriptions } from "./jdHistory.js";
 
 if (window._resumePortalLoaded) {
   console.warn("Resume Portal already loaded. Skipping...");
@@ -158,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   handleFeedback();
   initializeNotifications();
   handleJobDescriptionUpload();
+  fetchJobDescriptions();
 
   // Load Navbar
   if (!navbarLoaded) {
