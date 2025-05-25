@@ -15,6 +15,8 @@ MONGODB_URI=<your-mongodb-uri>
 MONGO_USER=<your-mongodb-username>
 MONGO_PASSWORD=<your-mongodb-password>
 GENAI_API_KEY=<your-genai-api-key>
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
 ```
 
 ### Installation and Setup
