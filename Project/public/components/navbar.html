@@ -17,6 +17,7 @@
           <a class="nav-link" href="https://www.linkedin.com" target="_blank">LinkedIn</a>
         </li>
         <li class="nav-item" id="loginLink">
+<<<<<<< HEAD
           <a href="/auth/google" class="btn btn-light">
             <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 20px; margin-right: 8px;">
             Login with Google
@@ -25,8 +26,23 @@
         <li class="nav-item d-flex align-items-center d-none" id="logoutLink">
           <span class="nav-link text-light" id="userName"></span>
           <button class="btn btn-danger ms-2" id="logoutBtn">Logout</button>
+=======
+          <button class="btn btn-light" id="loginBtn">
+            <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 20px; margin-right: 8px;">
+            Login with Google
+          </button>
+        </li>
+        <li class="nav-item" id="logoutLink" style="display: none;">
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
         </li>
       </ul>
+      <div class="navbar-nav">
+        <!-- User info display -->
+        <div class="nav-item d-flex align-items-center" id="userInfo" style="display: none;">
+          <span class="nav-link text-light" id="userName"></span>
+          <button class="btn btn-danger ms-2" id="logoutBtn">Logout</button>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

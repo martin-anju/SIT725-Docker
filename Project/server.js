@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 require("dotenv").config();
 
+=======
+// Load environment variables LUCAS
+require("dotenv").config(); //
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
 
 // Google OAuth 2.0 setup LUCAS
 const { setupGoogleStrategy } = require("./controllers/authController");
@@ -24,6 +29,34 @@ const app = express();
 const port = 3002;
 const feedbackSessionRoutes = require("./routers/feebackSessionRoutes");
 
+<<<<<<< HEAD
+// Update session configuration
+=======
+// Middleware LUCAS
+/*
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
+app.use(
+  session({
+    name: "userSessionToken",
+    secret: "secret",
+<<<<<<< HEAD
+    resave: true, // Change to true
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // Set to true if using HTTPS
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: true,
+    },
+  })
+);
+=======
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+*/
+
 // Update session configuration
 app.use(
   session({
@@ -39,10 +72,32 @@ app.use(
     },
   })
 );
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
 // Initialise passport and integrate with express session LUCAS
 app.use(passport.initialize()); // intialises passport
 app.use(passport.session()); // makes sure passport integrates with express-session
 
+<<<<<<< HEAD
+=======
+// Configure Google OAuth strategy LUCAS
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID, // From Google Console
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET, // From Google Console
+      callbackURL: "http://localhost:3002/auth/google/callback", // Correct URL to redirect after Google Login
+    },
+    (accessToken, refreshToken, profile, done) => {
+      return done(null, profile); // Pass user profile to next middleware
+    }
+  )
+);
+
+// Serialise/Deserialise user for session handling LUCAS
+passport.serializeUser((user, done) => done(null, user)); // Save user to session
+passport.deserializeUser((user, done) => done(null, user)); // Retrieve user from session
+
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
 // Socket.IO setup
 const http = require("http");
 const { Server } = require("socket.io");
@@ -84,13 +139,44 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files like index.html, CSS, and client-side JS from 'public'
 app.use(express.static(path.join(__dirname, "public")));
 
+<<<<<<< HEAD
 app.use("/auth", authRoutes);
 
+=======
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }) // Start OAuth flow
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  async (req, res) => {
+    try {
+      await userDb.createUser(req.user);
+      req.session.userName = req.user.displayName;
+      res.redirect("/"); // redirect back to homepage
+    } catch (error) {
+      console.error("Error during Google authentication:", error);
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  }
+);
+
+app.get("/api/user", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ loggedIn: true, name: req.session.userName });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
 
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.displayName}`); // Show welcome message after login
 });
 
+<<<<<<< HEAD
 connectToMongoDB()
   .then(async () => {
     // Connect Mongoose
@@ -113,6 +199,52 @@ connectToMongoDB()
     // Set up Google OAuth AFTER DB and Mongoose are connected
     setupGoogleStrategy();
 
+=======
+app.get("/logout", (req, res) => {
+  // First clear the session cookie
+  res.clearCookie("userSessionToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+    domain: "localhost", // Add domain
+  });
+
+  console.log("Cookie cleared");
+
+  // Then handle the logout
+  req.logout((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ message: "Error logging out" });
+    }
+
+    console.log("Passport logout completed");
+
+    // Destroy the session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        return res.status(500).json({ message: "Error destroying session" });
+      }
+
+      console.log("Session destroyed");
+
+      // Send success response
+      res.status(200).json({
+        message: "Logged out successfully",
+        success: true,
+      });
+    });
+  });
+});
+
+// MongoDB Connection
+connectToMongoDB()
+  .then(async () => {
+    // Pass the database and GridFSBucket instances to routes
+    await createUserIndexes();
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
     app.use((req, res, next) => {
       req.db = getDb(); // Attach the database instance to the request object
       req.gfsBucket = getGfsBucket(); // Attach the GridFSBucket instance to the request object
@@ -129,6 +261,7 @@ connectToMongoDB()
       res.sendFile(path.join(__dirname, "public", "index.html"));
     });
 
+<<<<<<< HEAD
     // Add this route to respond to /api/user
     app.get("/api/user", (req, res) => {
       if (req.isAuthenticated && req.isAuthenticated()) {
@@ -138,6 +271,8 @@ connectToMongoDB()
       }
     });
     
+=======
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861
     // Start the server
     server.listen(port, () => {
       console.log("Server (HTTP + Socket.IO) listening on port " + port);

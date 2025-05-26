@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+<<<<<<< HEAD
 const User = mongoose.model("User", userSchema);
 
 // Utility functions using the Mongoose model
@@ -36,3 +37,6 @@ module.exports = {
   findUserByGoogleId,
   createUser,
 };
+=======
+module.exports = mongoose.model("User", userSchema);
+>>>>>>> df2e2552965944561098d8ab8d0b9fdc934c9861

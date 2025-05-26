@@ -194,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("navbar").innerHTML = html;
         navbarLoaded = true;
 
-        // Wait until DOM is ready for injected content
         requestAnimationFrame(() => {
           fetch("/auth/user")
             .then((res) => res.json())
@@ -207,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logoutBtn.addEventListener("click", (e) => {
                   e.preventDefault();
                   logoutUser();
-                })
+                });
               }
             });
         });
