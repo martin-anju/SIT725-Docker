@@ -1,21 +1,38 @@
-const { getDb } = require("../db/mongoConnection");
+const mongoose = require("mongoose");
 
-// Find a user in the "users" collection by their Google ID
+const userSchema = new mongoose.Schema({
+  googleId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: String,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  profilePicture: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+
+// Utility functions using the Mongoose model
 async function findUserByGoogleId(googleId) {
-  const db = getDb();
-  return await db.collection("users").findOne({ googleId });
+  return await User.findOne({ googleId });
 }
 
-// Create a new user in the "users" collection
-async function createUser(user) {
-  const db = getDb();
-  await db.collection("users").insertOne({
-    ...user,
-    createdAt: new Date(),
-  });
+async function createUser(userData) {
+  const newUser = new User(userData);
+  return await newUser.save();
 }
 
 module.exports = {
+  User,
   findUserByGoogleId,
   createUser,
 };

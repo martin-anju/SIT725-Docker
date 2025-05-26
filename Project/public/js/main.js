@@ -3,6 +3,9 @@ import { handleFeedback } from "./feedback.js";
 import { initializeChart } from "./chart.js";
 import { initializeNotifications } from "./notification.js";
 import { handleJobDescriptionUpload } from "./upload.js";
+import LoginManager from "./login.js";
+import { fetchUserSessions, displaySessions } from "./sessions.js";
+import { fetchJobDescriptions } from "./jdHistory.js";
 
 if (window._resumePortalLoaded) {
   console.warn("Resume Portal already loaded. Skipping...");
@@ -13,6 +16,11 @@ window._resumePortalLoaded = true;
 // Flags to prevent duplicate loading
 let navbarLoaded = false;
 let footerLoaded = false;
+
+if (!window.loginManager) {
+  window.loginManager = new LoginManager();
+  console.log("Login manager initialized");
+}
 
 // Function to fetch and display uploaded resumes
 function fetchResumes() {
@@ -151,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   handleFeedback();
   initializeNotifications();
   handleJobDescriptionUpload();
+  fetchJobDescriptions();
 
   // Load Navbar
   if (!navbarLoaded) {
@@ -160,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("navbar").innerHTML = html;
         navbarLoaded = true; // Mark as loaded
         updateLoginLogoutLinks(); // Update login/logout links based on login status
+        window.loginManager = new LoginManager();
       })
       .catch((err) => console.error("Error loading navbar:", err));
   }
@@ -221,3 +231,16 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(feedbackResult, { childList: true, subtree: true });
   }
 });
+
+// Function to load and display user sessions
+async function loadUserSessions() {
+  try {
+    const sessions = await fetchUserSessions();
+    displaySessions(sessions);
+  } catch (error) {
+    console.error("Error loading sessions:", error);
+  }
+}
+
+// Call this when the page loads or when you want to refresh the sessions
+document.addEventListener("DOMContentLoaded", loadUserSessions);

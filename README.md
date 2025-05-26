@@ -15,6 +15,8 @@ MONGODB_URI=<your-mongodb-uri>
 MONGO_USER=<your-mongodb-username>
 MONGO_PASSWORD=<your-mongodb-password>
 GENAI_API_KEY=<your-genai-api-key>
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
 ```
 
 ### Installation and Setup
@@ -63,9 +65,15 @@ GENAI_API_KEY=<your-genai-api-key>
 SIT725/
 ├── controllers/
 │   ├── resumeController.js      # Handles resume-related logic
-│   └── jobController.js         # Handles job description-related logic
+│   |── jobController.js         # Handles job description-related logic
+|   |── resumeController.js      # Handles resume logic
+|   └── userController.js        # Handles user logic
+|
 ├── db/
 │   └── mongoConnection.js       # MongoDB connection logic
+|   |── feebackSessionDB.js      # feedback session schema
+|   └── userDB.js                # user schema
+|
 ├── models/
 │   ├── resumeModel.js           # Handles resume database operations
 │   └── jobModel.js              # Handles job description database operations
@@ -79,11 +87,13 @@ SIT725/
 │   │   ├── main.js              # Main frontend logic
 │   │   ├── feedback.js          # Handles feedback functionality
 │   │   ├── chart.js             # Chart rendering logic
+|   |   |   sessions.js          # fetch/display feedback sessions
 │   │   ├── notification.js      # Handles Socket.IO notifications
 │   │   ├── upload.js            # Handles resume file upload
 │   └── index.html               # Frontend UI
 ├── routers/
 │   ├── resumeRoutes.js          # Defines API routes for resumes
+|   ├── feebackSessionRoutes.js  # Defines API routes for feebacks
 │   └── jobRoutes.js             # Defines API routes for job descriptions
 ├── server.js                    # Express server configuration
 └── package.json                 # Project dependencies

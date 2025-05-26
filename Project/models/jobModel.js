@@ -6,7 +6,10 @@ const uploadJDToGridFS = (gfsBucket, file) => {
   return new Promise((resolve, reject) => {
     const uploadStream = gfsBucket.openUploadStream(file.originalname, {
       contentType: file.mimetype,
-      metadata: { fileType: "jobDescription" }, 
+      metadata: { 
+        fileType: "jobDescription",
+        deleted: false
+       }, 
     });
     console.log("📦 Calling uploadStream.end() to write file buffer...");
     uploadStream.end(file.buffer);
@@ -24,7 +27,7 @@ const uploadJDToGridFS = (gfsBucket, file) => {
 const getAllJobDescriptions = async (db) => {
   return await db
     .collection("uploads.files")
-    .find({ "metadata.fileType": "jobDescription" })
+    .find({ "metadata.fileType": "jobDescription", "metadata.deleted": { $ne: true } })
     .toArray();
 };
 

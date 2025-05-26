@@ -17,6 +17,8 @@ function setupGoogleStrategy() {
                 const newUser = {
                     googleId: profile.id,
                     name: profile.displayName,
+                    email: profile.emails?.[0]?.value || "",
+                    profilePicture: profile.photos?.[0]?.value || "",
                     createdAt: new Date(),
                 };
 
@@ -58,11 +60,30 @@ function checkUserSession(req, res) {
     }
 }
 
-// Logs the user out and redirects to home
 function logoutUser(req, res, next) {
+    // Clear the session cookie
+    res.clearCookie("userSessionToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+        domain: "localhost",
+    });
+
+    console.log("Cookie cleared");
+
     req.logout(err => {
         if (err) return next(err);
-        res.redirect("/");
+
+        req.session.destroy(err => {
+            if (err) {
+                console.error("Error destroying session:", err);
+                return res.status(500).json({ message: "Error during logout" });
+            }
+
+            console.log("Session destroyed");
+            res.redirect("/");
+        });
     });
 }
 

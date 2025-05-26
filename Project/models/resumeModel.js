@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { GoogleGenAI } = require("@google/genai");
 const dotenv = require("dotenv");
+const { updateFeedbackSession } = require("../db/feedbackSessionDB");
 
 dotenv.config(); // Load environment variables from .env file
 const ai = new GoogleGenAI({ apiKey: process.env.GENAI_API_KEY });
@@ -33,7 +34,11 @@ const uploadResumeToGridFS = (gfsBucket, file) => {
 };
 
 // Evaluate the resume using Google GenAI
-const evaluateResume = async (resumeText, jobDescription) => {
+const evaluateResume = async (
+  resumeText,
+  jobDescription,
+  feedbackSessionId
+) => {
   try {
     const prompt = `
       You are an AI assistant helping to evaluate resumes.
@@ -83,6 +88,7 @@ const evaluateResume = async (resumeText, jobDescription) => {
 
     // Log raw response for debugging
     console.log("Raw response from Gemini:", response.text);
+    console.log("🟦 Feedback Session ID:", feedbackSessionId);
 
     // Extract the first valid JSON object from the response
     const jsonMatch = response.text.match(/\{[\s\S]*?\}/);
@@ -112,24 +118,48 @@ const evaluateResume = async (resumeText, jobDescription) => {
       Tailor: parsedResponse["Tailor"] || "No", // Default to "No" if not present
     };
     const importantKeywords = [
-      "python", "sql", "aws", "azure", "gcp", "pytorch", "tensorflow", "dbt",
-      "power bi", "tableau", "cloud", "ml", "machine learning", "data analysis"
+      "python",
+      "sql",
+      "aws",
+      "azure",
+      "gcp",
+      "pytorch",
+      "tensorflow",
+      "dbt",
+      "power bi",
+      "tableau",
+      "cloud",
+      "ml",
+      "machine learning",
+      "data analysis",
     ];
-    
-    const normalize = text =>
+
+    const normalize = (text) =>
       text
         .toLowerCase()
-        .replace(/[^a-z0-9\s+]/g, " ")  // remove punctuation
-        .replace(/\s+/g, " ")           // collapse extra whitespace
+        .replace(/[^a-z0-9\s+]/g, " ") // remove punctuation
+        .replace(/\s+/g, " ") // collapse extra whitespace
         .trim();
-    
+
     const jdNormalized = normalize(jobDescription);
     const resumeNormalized = normalize(resumeText);
-    
-    const missingKeywords = importantKeywords.filter(keyword =>
-      jdNormalized.includes(keyword) && !resumeNormalized.includes(keyword)
+
+    const missingKeywords = importantKeywords.filter(
+      (keyword) =>
+        jdNormalized.includes(keyword) && !resumeNormalized.includes(keyword)
     );
     console.log("Missing keywords:", missingKeywords);
+
+    // Update feedback session with complete evaluation data
+    if (feedbackSessionId) {
+      await updateFeedbackSession(feedbackSessionId, {
+        status: "completed",
+        scores: scores,
+        explanation: explanationText,
+        jobDescription: jobDescription,
+        updatedAt: new Date(),
+      });
+    }
 
     // Return structured result with explanation and scores
     return {

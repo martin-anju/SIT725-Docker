@@ -9,6 +9,8 @@ const {
   evaluateResume,
 } = require("../models/resumeModel");
 
+const { createFeedbackSession } = require("../db/feedbackSessionDB");
+
 // Fetch all uploaded resumes
 exports.getAllResumes = async (req, res) => {
   try {
@@ -43,7 +45,7 @@ exports.getResumeById = async (req, res) => {
     // Set the appropriate headers for the file
     res.set({
       "Content-Type": file.contentType,
-      "Content-Disposition": `attachment; filename="${file.filename}"`,
+      "Content-Disposition": `inline; filename="${file.filename}"`,
     });
 
     // Stream the file content to the response
@@ -84,18 +86,32 @@ exports.uploadResume = async (req, res) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       extractedText = await mammoth
-      .extractRawText({ buffer: Buffer.from(req.file.buffer) })
+        .extractRawText({ buffer: Buffer.from(req.file.buffer) })
         .then((result) => result.value);
     } else {
       console.log("Unsupported file format");
       return res.status(400).send("Unsupported file format");
     }
 
+    const sessionData = {
+      userId: req.user.id,
+      resumeId: fileId,
+      feedback: {
+        status: "pending",
+        //resumeText: extractedText,
+        createdAt: new Date(),
+      },
+    };
+    console.log("Creating feedback session with data:", sessionData); // Debug log
+
+    const feedbackSessionId = await createFeedbackSession(sessionData);
+
     console.log("Sending response back to the frontend");
     res.status(201).send({
       message: "Resume uploaded successfully",
       fileId: fileId,
       extractedText: extractedText,
+      feedbackSessionId: feedbackSessionId,
     });
   } catch (err) {
     console.error("Error uploading resume:", err);
@@ -105,15 +121,20 @@ exports.uploadResume = async (req, res) => {
 
 exports.evaluateResume = async (req, res) => {
   try {
-    const { resumeText, jobDescription } = req.body;
+    const { resumeText, jobDescription, feedbackSessionId } = req.body;
 
-    if (!resumeText || !jobDescription) {
-      return res
-        .status(400)
-        .json({ message: "Both resume text and job description are required" });
+    if (!resumeText || !jobDescription || !feedbackSessionId) {
+      return res.status(400).json({
+        message:
+          "Both resume text, job description and feedback session ID are required",
+      });
     }
 
-    const evaluation = await evaluateResume(resumeText, jobDescription);
+    const evaluation = await evaluateResume(
+      resumeText,
+      jobDescription,
+      feedbackSessionId
+    );
     const io = req.io; // Access the socket.io instance from req
     if (io) {
       io.emit("feedbackReady", {
@@ -140,12 +161,15 @@ exports.uploadJobDescription = async (req, res) => {
     if (req.file.mimetype === "application/pdf") {
       extractedText = await pdfParse(req.file.buffer).then((data) => data.text);
     } else if (
-      req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      req.file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
-      const result = await mammoth.extractRawText({ buffer: Buffer.from(req.file.buffer) });
+      const result = await mammoth.extractRawText({
+        buffer: Buffer.from(req.file.buffer),
+      });
       extractedText = result.value;
       console.log("🟦 JD extracted text length:", extractedText.length);
-      console.log("🟩 JD preview:", extractedText.slice(0, 200));  // First 200 characters
+      console.log("🟩 JD preview:", extractedText.slice(0, 200)); // First 200 characters
     } else {
       return res.status(400).send("Unsupported file format");
     }
