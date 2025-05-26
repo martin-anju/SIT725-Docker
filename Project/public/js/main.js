@@ -268,3 +268,29 @@ async function loadUserSessions() {
 
 // Call this when the page loads or when you want to refresh the sessions
 document.addEventListener("DOMContentLoaded", loadUserSessions);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("authOverlay");
+
+  fetch("/auth/user")
+    .then(res => res.json())
+    .then(data => {
+      const isLoggedIn = data.loggedIn;
+
+      if (isLoggedIn) {
+        overlay.style.display = "none"; // Hide if logged in
+      } else {
+        overlay.style.display = "flex"; // Show overlay
+      }
+    });
+
+  // Handle 'Skip for now'
+  document.getElementById("skipBtn").addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  // Handle 'Create with Email' - just redirect or open another modal
+  document.getElementById("createEmailBtn").addEventListener("click", () => {
+    alert("Feature coming soon!");
+  });
+});
