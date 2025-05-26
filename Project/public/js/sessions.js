@@ -196,6 +196,26 @@ window.showSessionDetail = function (sessionId) {
   modal.show();
 };
 
+
+function displayJDList(jds) {
+  const container = document.getElementById("jdHistoryContainer");
+  container.innerHTML = jds
+    .map(
+      (jd) => `
+        <div class="p-2 border-bottom d-flex justify-content-between">
+          <span>${jd.filename}</span>
+          <button class="btn btn-sm btn-outline-primary" onclick="viewJD('${jd._id}')">View</button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+window.viewJD = function (fileId) {
+  window.open(`http://localhost:3002/api/resumes/${fileId}`, "_blank");
+};
+
+
 // Add function to view resume
 window.viewResume = async function (resumeId) {
   try {

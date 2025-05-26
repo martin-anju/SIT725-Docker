@@ -1,6 +1,8 @@
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 const { uploadJDToGridFS } = require("../models/jobModel");
+const { ObjectId } = require("mongodb");
+
 
 exports.uploadJobDescription = async (req, res) => {
     console.log(" JD Upload route hit. gfsBucket exists:", !!req.gfsBucket);
@@ -39,3 +41,25 @@ exports.uploadJobDescription = async (req, res) => {
     res.status(500).send("Error uploading job description");
   }
 };
+
+exports.softDeleteJob = async (req, res) => {
+  try {
+    const db = req.db;
+    const fileId = new ObjectId(req.params.id);
+
+    const result = await db.collection("uploads.files").updateOne(
+      { _id: fileId },
+      { $set: { "metadata.deleted": true } }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.status(200).json({ message: "Job description marked as deleted." });
+    } else {
+      res.status(404).json({ message: "File not found or already deleted." });
+    }
+  } catch (err) {
+    console.error("Error during soft delete:", err);
+    res.status(500).json({ message: "Error deleting job description." });
+  }
+};
+
