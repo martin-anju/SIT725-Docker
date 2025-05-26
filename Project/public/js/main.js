@@ -22,6 +22,24 @@ if (!window.loginManager) {
   console.log("Login manager initialized");
 }
 
+// Make deleteResume accessible to the frontend
+window.deleteResume = function (resumeId) {
+  fetch(`http://localhost:3002/api/resumes/${resumeId}`, {
+    method: "DELETE",
+    credentials: "include"
+  })
+  .then((response) => {
+    if (response.ok) {
+      alert("Resume deleted successfully");
+      fetchResumes(); // Refresh
+    }
+  })
+  .catch((err) => {
+    console.error("Error deleting resume:", err);
+    alert("Error deleting resume");
+  });
+};
+
 // Function to fetch and display uploaded resumes
 function fetchResumes() {
   console.log("Fetching resumes...");
@@ -58,22 +76,6 @@ function fetchResumes() {
       }
     })
     .catch((err) => console.error("Error fetching resumes:", err));
-}
-
-// Function to delete a resume
-function deleteResume(resumeId) {
-  fetch(`http://localhost:3002/api/resumes/${resumeId}`, {
-    method: "DELETE", // Use DELETE method to delete the resume
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Resume deleted successfully");
-        fetchResumes(); // Re-fetch the list after deletion
-      } else {
-        alert("Error deleting resume");
-      }
-    })
-    .catch((err) => console.error("Error deleting resume:", err));
 }
 
 // Function to check if the user is logged in (using localStorage as an example)

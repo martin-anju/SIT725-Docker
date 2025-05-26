@@ -63,6 +63,29 @@ exports.getResumeById = async (req, res) => {
   }
 };
 
+// Delete a specific resume
+exports.deleteResume = async (req, res) => {
+  console.log("deleteResume called");
+  console.log("Resume ID:", req.params.id);
+  try {
+    const gfsBucket = req.gfsBucket;
+    const fileId = req.params.id;
+
+    if (!ObjectId.isValid(fileId)) {
+      console.warn("Invalid file ID")
+      return res.status(400).json({ message: "Invalid file ID" });
+    }
+
+    // Delete the file from GridFS
+    await gfsBucket.delete(new ObjectId(fileId));
+    console.log("Resume Deleted")
+    res.status(200).json({ message: "Resume deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting resume:", err);
+    res.status(500).json({ message: "Error deleting resume" });
+  }
+};
+
 exports.uploadResume = async (req, res) => {
   try {
     console.log("Starting uploadResume function");

@@ -11,6 +11,7 @@ const upload = multer({ storage });
 // Routes
 router.get("/", isAuthenticated, resumeController.getAllResumes); // Fetch all resumes
 router.get("/:id", isAuthenticated, resumeController.getResumeById); // Stream a specific resume
+router.delete("/:id", isAuthenticated, resumeController.deleteResume); // Delete a specfic resume
 router.post(
   "/upload",
   isAuthenticated,
