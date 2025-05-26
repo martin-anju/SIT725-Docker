@@ -61,28 +61,34 @@ function checkUserSession(req, res) {
 }
 
 function logoutUser(req, res, next) {
-    // Clear the session cookie
-    res.clearCookie("userSessionToken", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-        domain: "localhost",
-    });
+    console.log("🔁 Starting logout");
 
-    console.log("Cookie cleared");
+    req.logout(function (err) {
+        if (err) {
+            console.error("❌ Logout error:", err);
+            return next(err);
+        }
 
-    req.logout(err => {
-        if (err) return next(err);
+        console.log("✅ User logged out");
 
-        req.session.destroy(err => {
+        req.session.destroy(function (err) {
             if (err) {
-                console.error("Error destroying session:", err);
-                return res.status(500).json({ message: "Error during logout" });
+                console.error("❌ Error destroying session:", err);
+                return res.status(500).json({ success: false, message: "Error during logout" });
             }
 
-            console.log("Session destroyed");
-            res.redirect("/");
+            console.log("🧹 Session destroyed");
+
+            res.clearCookie("userSessionToken", {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                path: "/",
+            });
+
+            console.log("🍪 Cookie cleared");
+
+            return res.status(200).json({ success: true, message: "Logged out successfully" });
         });
     });
 }

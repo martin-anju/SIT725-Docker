@@ -129,6 +129,15 @@ connectToMongoDB()
       res.sendFile(path.join(__dirname, "public", "index.html"));
     });
 
+    // Add this route to respond to /api/user
+    app.get("/api/user", (req, res) => {
+      if (req.isAuthenticated && req.isAuthenticated()) {
+        res.json({ loggedIn: true, name: req.user.displayName });
+      } else {
+        res.json({ loggedIn: false });
+      }
+    });
+    
     // Start the server
     server.listen(port, () => {
       console.log("Server (HTTP + Socket.IO) listening on port " + port);

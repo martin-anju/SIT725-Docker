@@ -83,26 +83,51 @@ function checkIfLoggedIn() {
 }
 
 // Function to show or hide login/logout links based on login status
-function updateLoginLogoutLinks() {
+function updateLoginLogoutLinks(name = "") {
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const userName = document.getElementById("userName");
+
   const isLoggedIn = checkIfLoggedIn();
 
   if (isLoggedIn) {
-    document.getElementById("loginLink").style.display = "none"; // Hide Login link
-    document.getElementById("loginLink").style.display = "none"; // Hide Login link
-    document.getElementById("logoutLink").style.display = "block"; // Show Logout link
+    if (loginLink) loginLink.classList.add("d-none");
+    if (logoutLink) logoutLink.classList.remove("d-none");
+    if (userName) userName.textContent = name || "User";
   } else {
-    document.getElementById("loginLink").style.display = "block"; // Show Login link
-    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
-    document.getElementById("loginLink").style.display = "block"; // Show Login link
-    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
+    if (loginLink) loginLink.classList.remove("d-none");
+    if (logoutLink) logoutLink.classList.add("d-none");
+    if (userName) userName.textContent = "";
   }
 }
 
-// Function to handle user logout
 function logoutUser() {
-  // Clear the login status and redirect to homepage
-  localStorage.setItem("isLoggedIn", "false"); // Example of logging out
-  window.location.href = "/"; // Redirect to homepage after logout
+  fetch("/auth/logout", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Accept": "application/json"
+    }
+  })
+    .then((res) => {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
+        return res.json();
+      }
+      throw new Error("Unexpected response format");
+    })
+    .then((data) => {
+      if (data.success) {
+        localStorage.setItem("isLoggedIn", "false");
+        window.location.href = "/";
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    })
+    .catch((err) => {
+      console.error("Logout error:", err);
+      alert("Logout failed. Please try again.");
+    });
 }
 
 // Function to handle PDF Download
@@ -167,8 +192,25 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((response) => response.text())
       .then((html) => {
         document.getElementById("navbar").innerHTML = html;
-        navbarLoaded = true; // Mark as loaded
-        updateLoginLogoutLinks(); // Update login/logout links based on login status
+        navbarLoaded = true;
+
+        // Wait until DOM is ready for injected content
+        requestAnimationFrame(() => {
+          fetch("/auth/user")
+            .then((res) => res.json())
+            .then((data) => {
+              localStorage.setItem("isLoggedIn", data.loggedIn ? "true" : "false");
+              updateLoginLogoutLinks(data.name || "User");
+
+              const logoutBtn = document.getElementById("logoutBtn");
+              if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                  e.preventDefault();
+                  logoutUser();
+                })
+              }
+            });
+        });
         window.loginManager = new LoginManager();
       })
       .catch((err) => console.error("Error loading navbar:", err));
@@ -187,25 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch and display the uploaded resumes when the page is loaded
   fetchResumes();
-
-  // Fetch user info and update the Google button label LUCAS
-  fetch("/auth/user")
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.loggedIn) {
-        const googleBtn = document.querySelector(".gsi-material-button-contents");
-        if (googleBtn) {
-          googleBtn.textContent = `Welcome, ${data.name || "User"}`;
-        }
-        const loginLink = document.getElementById("loginLink");
-        const logoutLink = document.getElementById("logoutLink");
-        if (loginLink && logoutLink) {
-          loginLink.style.display = "none";
-          logoutLink.style.display = "block";
-        }
-      }
-    })
-    .catch((err) => console.error("Error checking user login:", err));
 
   // Handle logout button click
   const logoutBtn = document.getElementById("logoutBtn");
