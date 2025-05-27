@@ -54,6 +54,32 @@ const io = new Server(server, {
   },
 });
 
+// Track user sockets for per-user notifications
+const userSockets = new Map();
+
+io.on("connection", (socket) => {
+  console.log("🔌 New client connected:", socket.id);
+
+  socket.on("registerUser", (userId) => {
+    userSockets.set(userId, socket.id);
+    console.log(`✅ Registered user ${userId} to socket ${socket.id}`);
+  });
+
+  socket.on("disconnect", () => {
+    for (const [userId, id] of userSockets.entries()) {
+      if (id === socket.id) {
+        userSockets.delete(userId);
+        console.log(` Removed socket mapping for user ${userId}`);
+        break;
+      }
+    }
+    console.log(" Client disconnected:", socket.id);
+  });
+});
+
+// Make userSockets available in all routes/controllers
+app.set("userSockets", userSockets);
+
 app.use((req, res, next) => {
   req.io = io; // Attach the socket.io instance to the request object
   next();
@@ -131,12 +157,16 @@ connectToMongoDB()
 
     // Add this route to respond to /api/user
     app.get("/api/user", (req, res) => {
-      if (req.isAuthenticated && req.isAuthenticated()) {
-        res.json({ loggedIn: true, name: req.user.displayName });
-      } else {
-        res.json({ loggedIn: false });
-      }
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    res.json({
+      loggedIn: true,
+      name: req.user.displayName,
+      id: req.user.id, 
     });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
 
     // Start the server
     server.listen(port, () => {
