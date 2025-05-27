@@ -22,6 +22,24 @@ if (!window.loginManager) {
   console.log("Login manager initialized");
 }
 
+// Make deleteResume accessible to the frontend
+window.deleteResume = function (resumeId) {
+  fetch(`http://localhost:3002/api/resumes/${resumeId}`, {
+    method: "DELETE",
+    credentials: "include"
+  })
+  .then((response) => {
+    if (response.ok) {
+      alert("Resume deleted successfully");
+      fetchResumes(); // Refresh
+    }
+  })
+  .catch((err) => {
+    console.error("Error deleting resume:", err);
+    alert("Error deleting resume");
+  });
+};
+
 // Function to fetch and display uploaded resumes
 function fetchResumes() {
   console.log("Fetching resumes...");
@@ -60,22 +78,6 @@ function fetchResumes() {
     .catch((err) => console.error("Error fetching resumes:", err));
 }
 
-// Function to delete a resume
-function deleteResume(resumeId) {
-  fetch(`http://localhost:3002/api/resumes/${resumeId}`, {
-    method: "DELETE", // Use DELETE method to delete the resume
-  })
-    .then((response) => {
-      if (response.ok) {
-        alert("Resume deleted successfully");
-        fetchResumes(); // Re-fetch the list after deletion
-      } else {
-        alert("Error deleting resume");
-      }
-    })
-    .catch((err) => console.error("Error deleting resume:", err));
-}
-
 // Function to check if the user is logged in (using localStorage as an example)
 function checkIfLoggedIn() {
   // Check for user login status (can be replaced with session cookies or token validation)
@@ -83,26 +85,51 @@ function checkIfLoggedIn() {
 }
 
 // Function to show or hide login/logout links based on login status
-function updateLoginLogoutLinks() {
+function updateLoginLogoutLinks(name = "") {
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const userName = document.getElementById("userName");
+
   const isLoggedIn = checkIfLoggedIn();
 
   if (isLoggedIn) {
-    document.getElementById("loginLink").style.display = "none"; // Hide Login link
-    document.getElementById("loginLink").style.display = "none"; // Hide Login link
-    document.getElementById("logoutLink").style.display = "block"; // Show Logout link
+    if (loginLink) loginLink.classList.add("d-none");
+    if (logoutLink) logoutLink.classList.remove("d-none");
+    if (userName) userName.textContent = name || "User";
   } else {
-    document.getElementById("loginLink").style.display = "block"; // Show Login link
-    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
-    document.getElementById("loginLink").style.display = "block"; // Show Login link
-    document.getElementById("logoutLink").style.display = "none"; // Hide Logout link
+    if (loginLink) loginLink.classList.remove("d-none");
+    if (logoutLink) logoutLink.classList.add("d-none");
+    if (userName) userName.textContent = "";
   }
 }
 
-// Function to handle user logout
 function logoutUser() {
-  // Clear the login status and redirect to homepage
-  localStorage.setItem("isLoggedIn", "false"); // Example of logging out
-  window.location.href = "/"; // Redirect to homepage after logout
+  fetch("/auth/logout", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Accept": "application/json"
+    }
+  })
+    .then((res) => {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
+        return res.json();
+      }
+      throw new Error("Unexpected response format");
+    })
+    .then((data) => {
+      if (data.success) {
+        localStorage.setItem("isLoggedIn", "false");
+        window.location.href = "/";
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    })
+    .catch((err) => {
+      console.error("Logout error:", err);
+      alert("Logout failed. Please try again.");
+    });
 }
 
 // Function to handle PDF Download
@@ -167,8 +194,24 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((response) => response.text())
       .then((html) => {
         document.getElementById("navbar").innerHTML = html;
-        navbarLoaded = true; // Mark as loaded
-        updateLoginLogoutLinks(); // Update login/logout links based on login status
+        navbarLoaded = true;
+
+        requestAnimationFrame(() => {
+          fetch("/auth/user")
+            .then((res) => res.json())
+            .then((data) => {
+              localStorage.setItem("isLoggedIn", data.loggedIn ? "true" : "false");
+              updateLoginLogoutLinks(data.name || "User");
+
+              const logoutBtn = document.getElementById("logoutBtn");
+              if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                  e.preventDefault();
+                  logoutUser();
+                });
+              }
+            });
+        });
         window.loginManager = new LoginManager();
       })
       .catch((err) => console.error("Error loading navbar:", err));
@@ -225,3 +268,29 @@ async function loadUserSessions() {
 
 // Call this when the page loads or when you want to refresh the sessions
 document.addEventListener("DOMContentLoaded", loadUserSessions);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("authOverlay");
+
+  fetch("/auth/user")
+    .then(res => res.json())
+    .then(data => {
+      const isLoggedIn = data.loggedIn;
+
+      if (isLoggedIn) {
+        overlay.style.display = "none"; // Hide if logged in
+      } else {
+        overlay.style.display = "flex"; // Show overlay
+      }
+    });
+
+  // Handle 'Skip for now'
+  document.getElementById("skipBtn").addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  // Handle 'Create with Email' - just redirect or open another modal
+  document.getElementById("createEmailBtn").addEventListener("click", () => {
+    alert("Feature coming soon!");
+  });
+});

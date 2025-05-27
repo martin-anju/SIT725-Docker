@@ -105,3 +105,18 @@ SIT725/
 Backend: The backend uses Socket.IO to emit a feedbackReady event to the frontend when the resume feedback is processed.
 
 Frontend: The frontend listens for the feedbackReady event and displays a notification to the user.
+
+
+### Authentication with Google OAuth 2.0
+
+This project includes Google OAuth 2.0 login using Passport.js Users can sign in securely using their Google account.
+
+- The "Continue with Google" button is dymanically changed to display "Welcome, ${name}"
+- The "Login" link in the navbar is replaced with a "Logout" link after login
+- Session handling is managed by Express-Session and Passport.js
+
+'''Required .env properties
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+MONGODB_URI=mongodb://localhost:27017/resume-portal
+'''
