@@ -1,4 +1,5 @@
 import { io } from "https://cdn.socket.io/4.5.4/socket.io.esm.min.js";
+import { showToast } from "./toast.js";
 
 export function initializeNotifications() {
   const socket = io("http://localhost:3002"); // Replace with your server URL
@@ -6,7 +7,8 @@ export function initializeNotifications() {
   // Listen for the "feedbackReady" event
   socket.on("feedbackReady", (data) => {
     console.log(data.message); // Log the notification
-    alert(data.message); // Show an alert to the user
+    //alert(data.message); // Show an alert to the user
+    showToast(data.message, "success");
 
     // Optionally, update the UI with the evaluation data
     const feedbackResult = document.getElementById("feedbackResult");

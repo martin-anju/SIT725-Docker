@@ -1,4 +1,5 @@
 import { updateChart } from "./chart.js";
+import { showToast } from "./toast.js";
 
 export function handleFeedback() {
   const getFeedbackBtn = document.getElementById("getFeedbackBtn");
@@ -17,7 +18,7 @@ export function handleFeedback() {
     console.log("🟦 Feedback Session ID:", feedbackSessionId);
 
     if (!resumeText || !jobDescription) {
-      alert("Both resume text and job description are required.");
+      showToast("Both resume text and job description are required.", "error");
       return;
     }
 
