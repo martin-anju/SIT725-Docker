@@ -51,7 +51,7 @@ class LoginManager {
     console.log("Starting logout process..."); // Debug log
     try {
       console.log("Sending logout request..."); // Debug log
-      const response = await fetch("http://localhost:3002/logout", {
+      const response = await fetch("http://localhost:3002/auth/logout", {
         method: "GET",
         credentials: "include",
         headers: {

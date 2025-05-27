@@ -26,18 +26,18 @@ if (!window.loginManager) {
 window.deleteResume = function (resumeId) {
   fetch(`http://localhost:3002/api/resumes/${resumeId}`, {
     method: "DELETE",
-    credentials: "include"
+    credentials: "include",
   })
-  .then((response) => {
-    if (response.ok) {
-      alert("Resume deleted successfully");
-      fetchResumes(); // Refresh
-    }
-  })
-  .catch((err) => {
-    console.error("Error deleting resume:", err);
-    alert("Error deleting resume");
-  });
+    .then((response) => {
+      if (response.ok) {
+        alert("Resume deleted successfully");
+        fetchResumes(); // Refresh
+      }
+    })
+    .catch((err) => {
+      console.error("Error deleting resume:", err);
+      alert("Error deleting resume");
+    });
 };
 
 // Function to fetch and display uploaded resumes
@@ -108,8 +108,8 @@ function logoutUser() {
     method: "GET",
     credentials: "include",
     headers: {
-      "Accept": "application/json"
-    }
+      Accept: "application/json",
+    },
   })
     .then((res) => {
       const contentType = res.headers.get("content-type");
@@ -200,7 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
           fetch("/auth/user")
             .then((res) => res.json())
             .then((data) => {
-              localStorage.setItem("isLoggedIn", data.loggedIn ? "true" : "false");
+              localStorage.setItem(
+                "isLoggedIn",
+                data.loggedIn ? "true" : "false"
+              );
               updateLoginLogoutLinks(data.name || "User");
 
               const logoutBtn = document.getElementById("logoutBtn");
@@ -273,8 +276,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("authOverlay");
 
   fetch("/auth/user")
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       const isLoggedIn = data.loggedIn;
 
       if (isLoggedIn) {
