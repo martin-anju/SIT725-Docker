@@ -1,3 +1,4 @@
+import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
 import { handleFileUpload } from "./upload.js";
 import { handleFeedback } from "./feedback.js";
 import { initializeChart } from "./chart.js";
@@ -286,6 +287,30 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "flex"; // Show overlay
       }
     });
+
+    let socket;
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 👇 Socket connection
+  socket = io("http://localhost:3002", {
+    withCredentials: true,
+  });
+
+  // Fetch user info and register their socket
+  fetch("/api/user")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.loggedIn && data.name) {
+        socket.emit("registerUser", data.id);
+      }
+    });
+
+  // 👂 Listen for feedback notifications
+  socket.on("feedbackReady", (payload) => {
+    // Replace alert with a toast later if needed
+    alert(payload.message || "Your resume feedback is ready!");
+  });
+});
 
   // Handle 'Skip for now'
   document.getElementById("skipBtn").addEventListener("click", () => {

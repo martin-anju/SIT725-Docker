@@ -146,6 +146,7 @@ exports.evaluateResume = async (req, res) => {
   try {
     const { resumeText, jobDescription, feedbackSessionId } = req.body;
 
+    // Validate required fields
     if (!resumeText || !jobDescription || !feedbackSessionId) {
       return res.status(400).json({
         message:
@@ -153,26 +154,45 @@ exports.evaluateResume = async (req, res) => {
       });
     }
 
+    // Step 1: Perform resume evaluation
     const evaluation = await evaluateResume(
       resumeText,
       jobDescription,
       feedbackSessionId
     );
-    const io = req.io; // Access the socket.io instance from req
-    if (io) {
-      io.emit("feedbackReady", {
-        message: "Evaluation result is ready",
-        //evaluation: evaluation,
-      }); // Emit the evaluation result to all connected clients
+
+    // Step 2: Send real-time feedback notification to the specific user
+    const io = req.io;
+    const userId = req.user?.id;
+    const userSockets = req.app.get("userSockets");
+
+    if (io && userId && userSockets instanceof Map) {
+      const socketId = userSockets.get(userId);
+
+      if (socketId) {
+        io.to(socketId).emit("feedbackReady", {
+          message: "Your resume has been evaluated!",
+          sessionId: feedbackSessionId,
+          evaluation,
+        });
+        console.log(`Sent feedbackReady to user ${userId} via socket ${socketId}`);
+      } else {
+        console.warn(`No socket registered for user ${userId}`);
+      }
     } else {
-      console.error("Socket.io instance not found in request object");
+      console.warn("Unable to emit feedback notification — io/userId/sockets missing");
     }
+
+    // Step 3: Respond to client
     res.json({ evaluation });
+
   } catch (err) {
     console.error("Error evaluating resume:", err);
     res.status(500).json({ message: "Error evaluating resume" });
   }
 };
+
+
 
 exports.uploadJobDescription = async (req, res) => {
   try {
