@@ -3,14 +3,25 @@ import { showToast } from "./toast.js";
 
 export function handleFeedback() {
   const getFeedbackBtn = document.getElementById("getFeedbackBtn");
+  if (!getFeedbackBtn) {
+    console.error("Get Feedback button not found!");
+    return;
+  }
   const feedbackResult = document.getElementById("feedbackResult");
+  const explanationArea = document.getElementById("explanationArea");
+  const summaryText = document.getElementById("summaryText");
 
   getFeedbackBtn.addEventListener("click", async () => {
     const extractedTextArea = document.getElementById("extractedText");
     const jobDescriptionArea = document.getElementById("jobDescription");
 
-    const resumeText = extractedTextArea.value?.trim();
-    const jobDescription = jobDescriptionArea.value?.trim();
+    if (!extractedTextArea || !jobDescriptionArea) {
+      alert("Resume text or job description input missing.");
+      return;
+    }
+
+    const resumeText = extractedTextArea.value.trim();
+    const jobDescription = jobDescriptionArea.value.trim();
     const feedbackSessionId = localStorage.getItem("currentFeedbackSessionId");
 
     console.log("🟦 Resume Text Length:", resumeText.length);
@@ -22,8 +33,10 @@ export function handleFeedback() {
       return;
     }
 
+    // Show loading message or progress indicator
+    feedbackResult.innerHTML = "<em>Evaluating, please wait...</em>";
+
     try {
-      console.log("Sending request to backend...");
       const response = await fetch(
         "http://localhost:3002/api/resumes/evaluate",
         {
@@ -40,20 +53,23 @@ export function handleFeedback() {
       if (response.ok) {
         const data = await response.json();
         const scores = data.evaluation.scores || {};
-        const explanation =
-          data.evaluation.explanation || "No explanation provided.";
+        const explanation = data.evaluation.explanation || "No explanation provided.";
 
         feedbackResult.innerHTML = `<span class="text-success">${
           data.evaluation?.message || "Evaluation completed."
         }</span>`;
 
-        const explanationArea = document.getElementById("explanationArea");
         explanationArea.innerHTML = `<h5 class="text-primary mt-4">Key Results</h5>`;
 
-        // Try parsing the explanation text as JSON
+        let explanationObj = {};
         try {
-          const explanationObj = JSON.parse(`{${explanation}}`);
+          explanationObj = JSON.parse(explanation);
+        } catch (err) {
+          explanationArea.innerHTML += `<pre>${explanation}</pre>`;
+          console.error("Failed to parse explanation JSON:", err);
+        }
 
+        if (typeof explanationObj === "object" && Object.keys(explanationObj).length > 0) {
           for (const [key, value] of Object.entries(explanationObj)) {
             const card = document.createElement("div");
             card.className = "card mb-3";
@@ -65,25 +81,17 @@ export function handleFeedback() {
             `;
             explanationArea.appendChild(card);
           }
-        } catch (err) {
-          explanationArea.innerHTML += `<pre>${explanation}</pre>`;
-          console.error("Failed to parse explanation JSON:", err);
         }
 
         updateChart(scores);
-        // Show missing keywords
+
         const missing = data.evaluation.missingKeywords || [];
         console.log("🔍 Missing Keywords Received:", missing);
-        const summaryText = document.getElementById("summaryText");
-        console.log("📌 summaryText exists:", !!summaryText);
 
         if (summaryText) {
           if (missing.length) {
             const tagList = missing
-              .map(
-                (word) =>
-                  `<span class="badge bg-secondary me-1 mb-1">${word}</span>`
-              )
+              .map((word) => `<span class="badge bg-secondary me-1 mb-1">${word}</span>`)
               .join(" ");
             summaryText.innerHTML = `<strong>Missing Keywords:</strong><br>${tagList}`;
           } else {
