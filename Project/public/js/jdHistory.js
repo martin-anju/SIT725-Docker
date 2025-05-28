@@ -1,3 +1,5 @@
+import { showToast } from "./toast.js";
+
 // public/js/jdHistory.js
 
 // Store JD sessions globally if needed later
@@ -13,27 +15,28 @@ export async function fetchJobDescriptions() {
 
     const data = await response.json();
     jdFiles = data;
-    displayJobDescriptions(data); // 
-    return data; // 
+    displayJobDescriptions(data); //
+    return data; //
   } catch (error) {
-    console.error("Error fetching JD history:", error);
-    return []; // 
+    showToast("Error fetching job description history.", "error");
+    return []; //
   }
 }
-
 
 export function displayJobDescriptions(jobDescriptions) {
   const container = document.getElementById("jdHistoryContainer");
   container.innerHTML = ""; // Clear previous items
 
   if (!jobDescriptions.length) {
-    container.innerHTML = "<p class='text-muted'>No job descriptions uploaded.</p>";
+    container.innerHTML =
+      "<p class='text-muted'>No job descriptions uploaded.</p>";
     return;
   }
 
   jobDescriptions.forEach((job) => {
     const card = document.createElement("div");
-    card.className = "session-item p-2 border-bottom d-flex justify-content-between align-items-center";
+    card.className =
+      "session-item p-2 border-bottom d-flex justify-content-between align-items-center";
 
     const title = document.createElement("div");
     title.textContent = job.filename;
@@ -75,19 +78,17 @@ window.deleteJobDescription = async function (jobId) {
     });
 
     if (response.ok) {
-      alert("Job description deleted.");
+      showToast("Job description deleted.", "success");
       const updatedList = await fetchJobDescriptions();
       displayJobDescriptions(updatedList);
     } else {
-      alert("Failed to delete the job description.");
+      showToast("Failed to delete the job description.", "error");
     }
   } catch (err) {
     console.error("Error deleting job description:", err);
-    alert("Something went wrong.");
+    showToast("Something went wrong.", "error");
   }
 };
-
-
 
 // Global so you can open JD in new tab
 window.viewJD = function (fileId) {

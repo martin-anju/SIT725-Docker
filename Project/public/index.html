@@ -1,196 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resume Portal</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="icon" type="image/png" href="images/tabLogo.png" />
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Resume Portal</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-  <link rel="icon" type="image/png" href="images/tabLogo.png" />
-</head>
-
-<body class="d-flex flex-column min-vh-100">
-  <!-- Auth Overlay -->
-  <div id="authOverlay" style="
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  ">
-    <div style="
-      background-color: white;
-      padding: 2rem;
-      border-radius: 8px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    ">
-      <h2 class="text-dark mb-3">Welcome to Resume Portal</h2>
-      <p class="text-muted">Sign in to access your features:</p>
-      <a href="/auth/google" class="btn btn-primary my-2 w-100">
-        Sign in with Google
-      </a>
-      <button id="createEmailBtn" class="btn btn-outline-secondary my-2 w-100">
-        Create with Email
-      </button>
-      <button id="skipBtn" class="btn btn-link text-decoration-underline mt-2 text-muted">
-        Skip for now
-      </button>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Auth Overlay -->
+    <div
+      id="authOverlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      ">
+      <div
+        style="
+          background-color: white;
+          padding: 2rem;
+          border-radius: 8px;
+          max-width: 400px;
+          width: 90%;
+          text-align: center;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        ">
+        <h2 class="text-dark mb-3">Welcome to Resume Portal</h2>
+        <p class="text-muted">Sign in to access your features:</p>
+        <a href="/auth/google" class="btn btn-primary my-2 w-100">
+          Sign in with Google
+        </a>
+        <button
+          id="createEmailBtn"
+          class="btn btn-outline-secondary my-2 w-100">
+          Create with Email
+        </button>
+        <button
+          id="skipBtn"
+          class="btn btn-link text-decoration-underline mt-2 text-muted">
+          Skip for now
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- NavBar -->
-  <div id="navbar"></div>
+    <!-- NavBar -->
+    <div id="navbar"></div>
 
-  <!-- Main Content -->
-  <main class="flex-grow-1">
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Left Column - Sessions -->
-        <div class="col-md-3 border-end">
-          <div class="sticky-top" style="top: 20px">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="text-primary mb-0">Your Feedback History</h5>
-            </div>
-            <div id="sessionsContainer" class="overflow-auto" style="max-height: calc(100vh - 100px)">
-              <!-- Sessions will be displayed here -->
-            </div>
-          </div>
-          <h5 class="text-primary mt-4">Your Job Descriptions</h5>
-          <div id="jdHistoryContainer" class="overflow-auto" style="max-height: 200px;">
-            <!-- JD files will be listed here -->
-          </div>
-        </div>
-
-        <!-- Right Column - Main Content -->
-        <div class="col-md-9">
-          <div class="container my-5">
-            <div class="row justify-content-center">
-              <div class="col-12 text-center">
-                <h2 class="text-primary mb-4">Upload Your Resume</h2>
-                <p class="lead mb-5">
-                  Drop your resume here or click to upload
-                </p>
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Left Column - Sessions -->
+          <div class="col-md-3 border-end">
+            <div class="sticky-top" style="top: 20px">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-primary mb-0">Your Feedback History</h5>
               </div>
+              <div
+                id="sessionsContainer"
+                class="overflow-auto"
+                style="max-height: calc(100vh - 100px)">
+                <!-- Sessions will be displayed here -->
+              </div>
+            </div>
+            <h5 class="text-primary mt-4">Your Job Descriptions</h5>
+            <div
+              id="jdHistoryContainer"
+              class="overflow-auto"
+              style="max-height: 200px">
+              <!-- JD files will be listed here -->
+            </div>
+          </div>
+
+          <!-- Right Column - Main Content -->
+          <div class="col-md-9">
+            <div class="container my-5">
               <div class="row justify-content-center">
-                <div class="col-md-8">
-                  <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                      <!-- Resume Upload Form -->
-                      <form id="resumeForm">
-                        <div class="mb-4">
-                          <div class="input-group">
-                            <input type="file" class="form-control" id="resumeFile" accept=".pdf,.doc,.docx"
-                              required />
-                          </div>
-                        </div>
-                        <div class="text-center">
-                          <button type="submit" class="btn btn-primary mt-3">
-                            <i class="bi bi-upload me-2"></i>Upload
-                          </button>
-                          <div id="uploadProgress" class="progress mt-3 d-none">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                              0%
+                <div class="col-12 text-center">
+                  <h2 class="text-primary mb-4">Upload Your Resume</h2>
+                  <p class="lead mb-5">
+                    Drop your resume here or click to upload
+                  </p>
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-md-8">
+                    <div class="card shadow-sm">
+                      <div class="card-body p-4">
+                        <!-- Resume Upload Form -->
+                        <form id="resumeForm">
+                          <div class="mb-4">
+                            <div class="input-group">
+                              <input
+                                type="file"
+                                class="form-control"
+                                id="resumeFile"
+                                accept=".pdf,.doc,.docx"
+                                required />
                             </div>
                           </div>
-                          <div id="uploadStatus" class="mt-2 d-none">
-                            <span class="text-muted">Uploading...</span>
-                          </div>
-                        </div>
-                      </form>
-
-                      <!-- Resume History Section -->
-                      <div class="mt-4">
-                        <h5 class="text-primary">Uploaded Documents</h5>
-                        <ul id="resumeList" class="list-group"></ul>
-                        <!-- This will list the uploaded resumes -->
-                      </div>
-
-                      <!-- Extracted Text -->
-                      <div class="mt-4">
-                        <h5 class="text-primary">Extracted Text</h5>
-                        <textarea id="extractedText" class="form-control" rows="10" readonly></textarea>
-                      </div>
-
-                      <!-- Job Description Section -->
-                      <div class="mt-4">
-                        <h5 class="text-primary">Job Description</h5>
-                        <div class="mb-3">
-                          <label for="jobFile" class="form-label">Upload Job Description (PDF/DOCX)</label>
-                          <input type="file" class="form-control mb-2" id="jobFile" accept=".pdf,.doc,.docx" />
                           <div class="text-center">
-                            <button type="button" id="uploadJobBtn" class="btn btn-primary mt-3">
+                            <button type="submit" class="btn btn-primary mt-3">
                               <i class="bi bi-upload me-2"></i>Upload
                             </button>
-                          </div>
-
-                          <!-- Job Description Upload Progress -->
-                          <div id="uploadJobProgress" class="progress mt-3 d-none">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                              0%
+                            <div
+                              id="uploadProgress"
+                              class="progress mt-3 d-none">
+                              <div
+                                class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                aria-valuenow="0"
+                                aria-valuemin="0"
+                                aria-valuemax="100">
+                                0%
+                              </div>
+                            </div>
+                            <div id="uploadStatus" class="mt-2 d-none">
+                              <span class="text-muted">Uploading...</span>
                             </div>
                           </div>
-                          <div id="uploadJobStatus" class="mt-2 d-none">
-                            <span class="text-muted">Uploading...</span>
+                        </form>
+
+                        <!-- Resume History Section -->
+                        <div class="mt-4">
+                          <h5 class="text-primary">Uploaded Documents</h5>
+                          <ul id="resumeList" class="list-group"></ul>
+                          <!-- This will list the uploaded resumes -->
+                        </div>
+
+                        <!-- Extracted Text -->
+                        <div class="mt-4">
+                          <h5 class="text-primary">Extracted Text</h5>
+                          <textarea
+                            id="extractedText"
+                            class="form-control"
+                            rows="10"
+                            readonly></textarea>
+                        </div>
+
+                        <!-- Job Description Section -->
+                        <div class="mt-4">
+                          <h5 class="text-primary">Job Description</h5>
+                          <div class="mb-3">
+                            <label for="jobFile" class="form-label"
+                              >Upload Job Description (PDF/DOCX)</label
+                            >
+                            <input
+                              type="file"
+                              class="form-control mb-2"
+                              id="jobFile"
+                              accept=".pdf,.doc,.docx" />
+                            <div class="text-center">
+                              <button
+                                type="button"
+                                id="uploadJobBtn"
+                                class="btn btn-primary mt-3">
+                                <i class="bi bi-upload me-2"></i>Upload
+                              </button>
+                            </div>
+
+                            <!-- Job Description Upload Progress -->
+                            <div
+                              id="uploadJobProgress"
+                              class="progress mt-3 d-none">
+                              <div
+                                class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                aria-valuenow="0"
+                                aria-valuemin="0"
+                                aria-valuemax="100">
+                                0%
+                              </div>
+                            </div>
+                            <div id="uploadJobStatus" class="mt-2 d-none">
+                              <span class="text-muted">Uploading...</span>
+                            </div>
+                          </div>
+                          <textarea
+                            id="jobDescription"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Paste the job description here"></textarea>
+                        </div>
+
+                        <!-- Instant Feedback Button -->
+                        <button
+                          id="getFeedbackBtn"
+                          class="btn btn-primary mt-3 d-none">
+                          <i class="bi bi-lightning-charge-fill"></i>
+                          Get Your Instant Feedback
+                        </button>
+
+                        <!-- Feedback Progress Indicator -->
+                        <div id="feedbackProgress" class="progress mt-3 d-none">
+                          <div
+                            class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar"
+                            aria-valuenow="0"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            style="width: 100%">
+                            Processing...
                           </div>
                         </div>
-                        <textarea id="jobDescription" class="form-control" rows="5"
-                          placeholder="Paste the job description here"></textarea>
-                      </div>
 
-                      <!-- Instant Feedback Button -->
-                      <button id="getFeedbackBtn" class="btn btn-primary mt-3 d-none">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                        Get Your Instant Feedback
-                      </button>
+                        <!-- Feedback Container -->
+                        <div id="feedbackContainer">
+                          <!-- Feedback Section -->
+                          <div id="feedbackResult" class="mt-3"></div>
 
-                      <!-- Feedback Progress Indicator -->
-                      <div id="feedbackProgress" class="progress mt-3 d-none">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                          aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-                          Processing...
+                          <!-- Chart Section -->
+                          <div id="chartSection" class="mt-4">
+                            <h5 class="text-primary">Chart</h5>
+                            <div id="container" style="height: 400px"></div>
+                          </div>
+
+                          <!-- Summary Section -->
+                          <div id="summary" class="mt-4">
+                            <h5 class="text-primary">Summary</h5>
+                            <p id="summaryText" class="text-muted"></p>
+                          </div>
+
+                          <!-- Explanation Section -->
+                          <div id="explanationArea">
+                            <h5 class="text-primary mt-4">Explanation</h5>
+                          </div>
                         </div>
-                      </div>
-
-                      
-
-                      <!-- Feedback Container -->
-                      <div id="feedbackContainer">
-                        <!-- Feedback Section -->
-                        <div id="feedbackResult" class="mt-3"></div>
-
-                        <!-- Chart Section -->
-                        <div id="chartSection" class="mt-4">
-                          <h5 class="text-primary">Chart</h5>
-                          <div id="container" style="height: 400px"></div>
+                        <!-- Export PDF Button -->
+                        <div class="text-center mt-4">
+                          <button
+                            id="downloadPdfBtn"
+                            class="btn btn-primary mt-3 d-none">
+                            <i class="bi bi-download"></i>
+                            Download Feedback as PDF
+                          </button>
                         </div>
-
-                        <!-- Summary Section -->
-                        <div id="summary" class="mt-4">
-                          <h5 class="text-primary">Summary</h5>
-                          <p id="summaryText" class="text-muted"></p>
-                        </div>
-
-                        <!-- Explanation Section -->
-                        <div id="explanationArea">
-                          <h5 class="text-primary mt-4">Explanation</h5>
-                        </div>
-                      </div>
-                      <!-- Export PDF Button -->
-                      <div class="text-center mt-4">
-                        <button id="downloadPdfBtn" class="btn btn-primary mt-3 d-none">
-                          <i class="bi bi-download"></i>
-                          Download Feedback as PDF
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -200,31 +260,37 @@
           </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <!-- Footer -->
-  <div id="footer"></div>
+    <!-- Footer -->
+    <div id="footer"></div>
 
-  <!-- Session Detail Modal -->
-  <div class="modal fade" id="sessionDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Session Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="sessionDetailContent">
-          <!-- Session details will be displayed here -->
+    <!-- Session Detail Modal -->
+    <div class="modal fade" id="sessionDetailModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Session Details</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="sessionDetailContent">
+            <!-- Session details will be displayed here -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@3.0.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="js/main.js"></script>
-</body>
+    <!-- Toast Container -->
+    <div
+      class="toast-container position-fixed bottom-0 end-0 p-3"
+      style="z-index: 11"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@3.0.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </body>
 </html>
