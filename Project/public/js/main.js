@@ -7,6 +7,7 @@ import { handleJobDescriptionUpload } from "./upload.js";
 import LoginManager from "./login.js";
 import { fetchUserSessions, displaySessions } from "./sessions.js";
 import { fetchJobDescriptions } from "./jdHistory.js";
+import { showToast } from "./toast.js";
 
 if (window._resumePortalLoaded) {
   console.warn("Resume Portal already loaded. Skipping...");
@@ -31,13 +32,13 @@ window.deleteResume = function (resumeId) {
   })
     .then((response) => {
       if (response.ok) {
-        alert("Resume deleted successfully");
+        showToast("Resume deleted successfully.", "success");
         fetchResumes(); // Refresh
       }
     })
     .catch((err) => {
       console.error("Error deleting resume:", err);
-      alert("Error deleting resume");
+      showToast("Error deleting resume.", "error");
     });
 };
 
@@ -124,12 +125,12 @@ function logoutUser() {
         localStorage.setItem("isLoggedIn", "false");
         window.location.href = "/";
       } else {
-        alert("Logout failed. Please try again.");
+        showToast("Logout failed. Please try again", "error");
       }
     })
     .catch((err) => {
       console.error("Logout error:", err);
-      alert("Logout failed. Please try again.");
+      showToast("Logout failed. Please try again", "error");
     });
 }
 
@@ -141,7 +142,7 @@ async function handleDownloadPdf() {
     !feedbackContainer ||
     !document.getElementById("feedbackResult").innerHTML.trim()
   ) {
-    alert("No feedback to export!");
+    showToast("No feedback to export!", "error");
     return;
   }
 
@@ -173,7 +174,7 @@ async function handleDownloadPdf() {
     pdf.save("ResumeFeedback.pdf");
   } catch (err) {
     console.error("Error generating PDF:", err);
-    alert("An error occured while generating the PDF");
+    showToast("An error occured while generating the PDF", "error");
   }
 }
 
@@ -320,5 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle 'Create with Email' - just redirect or open another modal
   document.getElementById("createEmailBtn").addEventListener("click", () => {
     alert("Feature coming soon!");
+    //showToast("Feature coming soon!", "info");
   });
 });
