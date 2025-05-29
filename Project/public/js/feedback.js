@@ -53,35 +53,41 @@ export function handleFeedback() {
       if (response.ok) {
         const data = await response.json();
         const scores = data.evaluation.scores || {};
-        const explanation = data.evaluation.explanation || "No explanation provided.";
+        const explanation =
+          data.evaluation.explanation || "No explanation provided.";
 
         feedbackResult.innerHTML = `<span class="text-success">${
           data.evaluation?.message || "Evaluation completed."
         }</span>`;
 
-        explanationArea.innerHTML = `<h5 class="text-primary mt-4">Key Results</h5>`;
-
-        let explanationObj = {};
-        try {
-          explanationObj = JSON.parse(explanation);
-        } catch (err) {
-          explanationArea.innerHTML += `<pre>${explanation}</pre>`;
-          console.error("Failed to parse explanation JSON:", err);
-        }
-
-        if (typeof explanationObj === "object" && Object.keys(explanationObj).length > 0) {
-          for (const [key, value] of Object.entries(explanationObj)) {
-            const card = document.createElement("div");
-            card.className = "card mb-3";
-            card.innerHTML = `
-              <div class="card-body">
-                <h6 class="card-title text-primary">${key}</h6>
-                <p class="card-text text-muted">${value}</p>
-              </div>
-            `;
-            explanationArea.appendChild(card);
-          }
-        }
+        explanationArea.innerHTML = `
+          <div class="mb-3">
+            <h6>Feedback</h6>
+            <div id="explanationArea">
+              <h5 class="text-primary mt-4">Key Results</h5>
+              ${(() => {
+                try {
+                  const explanationObj = JSON.parse(`{${explanation}}`);
+                  return Object.entries(explanationObj)
+                    .map(
+                      ([key, value]) => `
+                        <div class="card mb-3">
+                          <div class="card-body">
+                            <h6 class="card-title text-primary">${key}</h6>
+                            <p class="card-text text-muted">${value}</p>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join("");
+                } catch (err) {
+                  console.error("Failed to parse explanation JSON:", err);
+                  return `<pre>${explanation}</pre>`;
+                }
+              })()}
+            </div>
+          </div>
+        `;
 
         updateChart(scores);
 
@@ -91,7 +97,10 @@ export function handleFeedback() {
         if (summaryText) {
           if (missing.length) {
             const tagList = missing
-              .map((word) => `<span class="badge bg-secondary me-1 mb-1">${word}</span>`)
+              .map(
+                (word) =>
+                  `<span class="badge bg-secondary me-1 mb-1">${word}</span>`
+              )
               .join(" ");
             summaryText.innerHTML = `<strong>Missing Keywords:</strong><br>${tagList}`;
           } else {
