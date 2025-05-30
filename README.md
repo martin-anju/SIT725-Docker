@@ -8,7 +8,7 @@ This project is a resume evaluation tool that leverages Google's Gemini AI to pr
 You can spin up both MongoDB and the Resume AI app with a single command, using Docker Compose.
 
 ## Build & start all services 
-   ```bash
+
    docker-compose up --build -d
 
 ## Which port to access
