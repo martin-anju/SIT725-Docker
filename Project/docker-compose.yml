@@ -1,0 +1,28 @@
+services:
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    # you can remove `image:` if you want Compose to name it for you
+    image: resume-ai:anjumartin
+    container_name: resume-ai
+    depends_on:
+      - mongodb
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/resumeAI
+      - PORT=3002
+    # Add this to tell Compose exactly how to start your app:
+    command: ["npm", "start"]
+
+volumes:
+  mongo-data:

@@ -113,6 +113,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/auth", authRoutes);
 
+app.get('/api/student', (req, res) => {
+  res.json({
+    name: "Anju Martin Palakeel",
+    studentId: "s223563396"
+  });
+});
+
+
 app.get("/profile", (req, res) => {
   res.send(`Welcome ${req.user.displayName}`); // Show welcome message after login
 });
