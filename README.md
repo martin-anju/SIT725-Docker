@@ -3,7 +3,7 @@
 This project is a resume evaluation tool that leverages Google's Gemini AI to provide detailed feedback on resumes. Users can upload their resume (in PDF or Word format) along with a job description, and the system will analyze the resume against the job description. The feedback includes scores for technical skills, leadership qualities, and relevance, along with tailored recommendations to improve the resume.
 ### Docker
 
-## Document How to Run Your Container
+## How to Run Your Container
 
 You can spin up both MongoDB and the Resume AI app with a single command, using Docker Compose.
 
