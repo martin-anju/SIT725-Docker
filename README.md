@@ -1,7 +1,32 @@
 ## Resume Evaluation Tool with Gemini
 
 This project is a resume evaluation tool that leverages Google's Gemini AI to provide detailed feedback on resumes. Users can upload their resume (in PDF or Word format) along with a job description, and the system will analyze the resume against the job description. The feedback includes scores for technical skills, leadership qualities, and relevance, along with tailored recommendations to improve the resume.
+### Docker
 
+## Document How to Run Your Container
+
+You can spin up both MongoDB and the Resume AI app with a single command, using Docker Compose.
+
+## Build & start all services 
+   ```bash
+   docker-compose up --build -d
+
+## Which port to access
+Open your browser or API client at:
+
+http://localhost:3002
+
+
+## Verify the /api/student endpoint
+
+curl http://localhost:3002/api/student
+Expected JSON output:
+
+{"name":"Anju Martin Palakeel","studentId":"s223563396"}
+
+## Stop & clean up
+
+docker-compose down
 ### Socket Programming
 
 This version of the project integrates Socket.IO to enable real-time notifications. When the backend completes processing the resume feedback, it sends a notification to the frontend to inform the user that the feedback is ready. This enhances the user experience by providing instant updates without requiring the user to refresh the page.
