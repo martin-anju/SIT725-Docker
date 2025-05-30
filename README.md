@@ -20,13 +20,17 @@ http://localhost:3002
 ## Verify the /api/student endpoint
 
 curl http://localhost:3002/api/student
+
+
 Expected JSON output:
+
 
 {"name":"Anju Martin Palakeel","studentId":"s223563396"}
 
 ## Stop & clean up
 
 docker-compose down
+
 ### Socket Programming
 
 This version of the project integrates Socket.IO to enable real-time notifications. When the backend completes processing the resume feedback, it sends a notification to the frontend to inform the user that the feedback is ready. This enhances the user experience by providing instant updates without requiring the user to refresh the page.
